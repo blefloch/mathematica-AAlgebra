@@ -12,13 +12,13 @@ Install by putting `SSAlgebra.wl` in the right place.
 
     SSExpand[a**(b+c)**b]
 
->       a**b^2 + a**c**b
+>       a b^2 + a**c**b
 
     SSClass[a]="scalar";
     SSClass[b]="scalar";
     SSExpand[a**(b+c)**b]
 
->       a**b^2 + a**c**b
+>       a b^2 + a b c
 
 We can use the package to compute in Uq(sl2), for instance checking some calculations in math/0507477.
 
