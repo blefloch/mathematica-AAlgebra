@@ -462,18 +462,24 @@ HoldPattern[pFlattenProd[Power[x_,n_Integer?Positive]]]:=
   Join@@ConstantArray[#,n],
   pNonCommutativeMultiply[Join@@ConstantArray[First[#],n]]]&[pFlattenProd[x]];
 HoldPattern[pFlattenProd[arg_]]:=pNonCommutativeMultiply[pTimes[arg]];
+(*TODO: implement negative powers:
+(a**(y z))^-2\[Equal](z^-1 y^-1)**a^-1**(z^-1 y^-1)**a^-1*)
 
 (*pExpandTop receives the result of pFlattenProd, after the argument
 has been made a fixed point of pDistribute[pExpandFactors[#]]& and
 has gone through pSortFactors.  Namely we now have
 pNonCommutativeMultiply[__pTimes].  The goal is to apply pProd rules
 to neighboring factors.*)
+(*TODO: this code repeatedly tries the same transformations.  Optimze.*)
 HoldPattern[pExpandTop[arg_pNonCommutativeMultiply]]:=
  mark[List@@arg,False]//.{
    mark[{a___,pTimes[b___,x_,y_,c___],d___},ch_]:>
     With[{p=pProdExpr[x**y]},
       mark[{a,pTimes[b,p,c],d},ch]/;Not[MatchQ[p,Hold[x**y]|Hold[y**x]|x y]]]
   }//.{
+   mark[{a___,pTimes[b___,x_^(m_:1),x_^(n_:1),c___],d___},ch_]:>
+    With[{l=m+n},If[l===0, mark[{a,pTimes[b,c],d},ch],
+     mark[{a,pTimes[b,x^l,c],d},ch]]/;m n<=0],
    mark[a:{___,pTimes[],___},ch_]:>mark[DeleteCases[a,pTimes[]],ch],
    mark[{a___,b:pTimes[___,x:Except[_?(FreeQ[only])]],c:pTimes[y:Except[_?(FreeQ[only])],___],d___},ch_]:>
     With[{p=pProdExpr[x**y]},
