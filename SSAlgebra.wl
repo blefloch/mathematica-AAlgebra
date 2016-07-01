@@ -25,14 +25,16 @@ Unprotect@@allfunctions;
 ClearAll@@allfunctions;
 
 (*TODO: in SSMonomials, sort the association by exponent*)
-(*TODO: maybe only look for commutativity (hence ugly brackets) in terms with only two factors and in factors of same class?*)
+(*TODO: maybe only look for commutativity (hence ugly brackets)
+in terms with only two factors and in factors of same class?*)
 (*TODO: in SSExpand, build a more clever order.*)
 (*TODO: in SSCollect and SSMonomials, build a more clever order for SSExpand,
 as the current one breaks with e.g. patt={x,_,x}.*)
 (*TODO: document and implement SSCollect[expr,{x1,{{x2,{_,y2}},y1}}] for
 nested collection with more control on the left/right order.*)
 (*TODO: write proper documentation pages, shorten usage strings.*)
-(*TODO: the final SSExpand in SSCollect is a bit too eager and may send a(b**c) to (ab)**c when we try to collect {_,b|c}.*)
+(*TODO: the final SSExpand in SSCollect is a bit too eager and may send
+a(b**c) to (ab)**c when we try to collect {_,b|c}.*)
 
 (*Usage["The expression $a/b+a/b$ is equal to $2a/b$"] will pretty-print
 what's between dollars.*)
@@ -198,7 +200,8 @@ expression using $PartialD[x]**y - y**PartialD[x] == D[y, x]$.";
 
 $SSMaxPower=100;
 
-(*Before declaring any global rule which involves NonCommutativeMultiply we made sure to remove its attributes Flat and OneIdentity by running ClearAll[NonCommutativeMultiply].
+(*Before declaring any global rule which involves NonCommutativeMultiply we
+make sure to remove its attributes Flat and OneIdentity by running ClearAll[NonCommutativeMultiply].
 Flat leads to inefficient pattern matching and to (avoidable with some pain) infinite recursion.
 Additionally, the pattern NonCommutativeMultiply[_,_NonCommutativeMultiply] would match any NonCommutativeMultiply[_].
 Also define here some basic properties of NonCommutativeMultiply.*)
@@ -258,10 +261,13 @@ SyntaxInformation[SSOrderWithinClass]={"ArgumentsPattern"->{_,_,_,_}};
 SetArgumentCount[SSOrderWithinClass,4];
 HoldPattern[SSOrderWithinClass[x_,y_,_,_]]:=Order[x,y];
 
+(*TODO:remove many rules of pProdExpr, now useless.*)
 (*Second argument of pProd is of the form x**y.
 First argument of pProd gives pOrder[x, y], fewer rules apply when that is -1.*)
 ClearAll[pProd,pProdExpr];
 SetAttributes[pProd,HoldRest];
+HoldPattern[pProd[_,a_?NumericQ**b_]]:=a b;
+HoldPattern[pProd[_,a_**b_?NumericQ]]:=a b;
 HoldPattern[pProd[_,expr_]]:=Hold[expr];
 (*pProdExpr has non-trivial code to deal with powers.*)
 SetAttributes[pProdExpr,HoldAll];
@@ -283,12 +289,17 @@ HoldPattern[pProdExpr[x_Times**y_]]:=
     b y|HoldPattern[y**b],mark[{a},{b,c}],(*Continue commuting y.*)
     Hold[b**y],With[
      {pos=-FirstPosition[Reverse[{c}],_?(pOrder[y,#1]=!=1&),{Length[{c}]+1},{1},Heads->False][[1]]},
-     {Times@@{a,b,c}[[;;pos]]**Times@@{c,y}[[pos;;]],pos=!=-1}], (*If y only commutes partway, place it according to pOrder.*)
+     (*If y only commutes partway, place it according to pOrder:*)
+     {Times@@{a,b,c}[[;;pos]]**Times@@{c,y}[[pos;;]],pos=!=-1}],
     _,{Times[a]**p**Times[c],True}]]
   /.mark[{},{c___}]:>{Times[y,c],True}},
   First[res]/;Last[res]];
 HoldPattern[pProdExpr[x_^(m_:1)**x_^(n_:1)]]:=
- With[{l=m+n},x^l];
+ With[{l=m+n},
+  If[IntegerQ[l]&&l>=2,
+   With[{p=pProd[0,x**x]},
+      If[p===Hold[x**x]||p===x^2,x^l,p^Quotient[l,2]**x^Mod[l,2]]],
+   x^l]];
 HoldPattern[pProdExpr[x_^(m_Integer:1)**y_^(n_Integer:1)/;m>=1&&n>=1]]:=
  With[{p=pProd[pOrder[x,y],x**y]},
   If[MatchQ[p,HoldPattern[y**x]|x y],x^m y^n,
@@ -365,6 +376,7 @@ HoldPattern[SSExpand[expr___,opt:OptionsPattern[]]]:=
    Block[{pTmpPos},
     pTmpPos[_]=Length[order]+1;
     MapIndexed[(pTmpPos[#1]=First[#2])&,order];
+    pTmpPos[_?NumericQ]=-1;
     distribute=OptionValue["Distribute"];
     expand=With[{e=OptionValue["Expand"]},Expand[#,e]&];
     only=OptionValue["Only"];
@@ -378,59 +390,137 @@ distribute=_;
 expand=Expand;
 only=_;
 
-(*pPrepDist[e1+e2+...] yields for instance {e3+e4+...,e1,e2,...},
-where the first item is a sum of the terms free of the pattern distribute,
-namely terms that should be kept together, and other terms are those that
-should be distributed.*)
-ClearAll[pPrepDist,pDistribute];
-HoldPattern[pPrepDist[expr_Plus]]:=
- With[{assoc=GroupBy[List@@expr,FreeQ[distribute]]},
-  With[{keep=Lookup[assoc,True,{}],dist=Lookup[assoc,False,{}]},
-   DeleteCases[Join[{Plus@@keep},dist],0]]];
-HoldPattern[pPrepDist[expr_]]:={expr};
-(*pDistribute[(a+b)**(c+d)] gives a**c+b**c+a**d+b**d (affected by Distribute option).*)
+
+(*pExpand*)
+ClearAll[pExpand,pExpandTop,pExpandTimes,pExpandNcm];
+HoldPattern[pExpand[arg:_NonCommutativeMultiply|_Times|_Power]]:=
+ With[{dist=pDistribute[pExpandFactors[arg]]},
+  If[Head[dist]===Plus,pExpand/@dist,pExpandTop[pFlattenProd[pSortFactors[dist]]]]];
+(*TODO:optimize use of FixedPoint above.*)
+HoldPattern[pExpand[arg:_List|_Plus|_And|_Nand|_Or|_Nor|_Xor|_Not|
+  _Equal|_Less|_LessEqual|_Greater|_GreaterEqual]]:=pExpand/@arg;
+HoldPattern[pExpand[arg_]]:=expand[arg];
+ClearAll[pExpandFactors];
+HoldPattern[pExpandFactors[arg:_NonCommutativeMultiply|_Times|_Power]]:=
+ pExpandFactors/@arg;
+HoldPattern[pExpandFactors[arg_]]:=pExpand[arg];
+(*pDistribute[arg_] distributes NonCommutativeMultiply, Times and Power
+immediately nested into each other starting at top-level (affected by
+Distribute option).  In all cases, NonCommutativeMultiply is used in the
+result because (a+b)**c\[Equal]c**(a+b) does not imply a**c\[Equal]c**a and b**c\[Equal]c**b.
+However, if there was nothing to distribute the Times or Power are left
+untouched.  E.g., a*b*(c+d)*e^2 becomes (a*b)**c**e^2+(a*b)**d**e^2.*)
+ClearAll[pDistribute];
 HoldPattern[pDistribute[arg_NonCommutativeMultiply]]:=
  Plus@@Flatten[Outer[NonCommutativeMultiply,
-  Sequence@@pPrepDist/@pFactorList[arg]]];
+  Sequence@@List@@@pDistributeAux/@pDistribute/@List@@arg]];
+HoldPattern[pDistribute[arg_Times]]:=
+ Plus@@Flatten[Outer[NonCommutativeMultiply,
+  Sequence@@List@@@(pDistributeAux/@pDistribute/@Sort[List@@arg,pOrder[#1,#2]>=0&]//.
+   {a___,b_pNoDist,c__pNoDist,d___}:>{a,pNoDist[Times@@Join[b,c]],d})]];
+HoldPattern[pDistribute[Power[x_,n_Integer?Positive]]]:=
+ With[{ppd=pDistributeAux[pDistribute[x]]},
+  Plus@@Flatten[Outer[NonCommutativeMultiply,
+   Sequence@@ConstantArray[List@@ppd,n]]]/;Head[ppd]===pToDist];
+HoldPattern[pDistribute[arg_]]:=arg;
+(*pDistributeAux[arg] yields pToDist[term1,term2...] if the arg is a sum of
+terms that should be distributed (according to the option Distribute) and
+pNoDist[arg] otherwise.*)
+ClearAll[pNoDist,pToDist,pDistributeAux];
+HoldPattern[pDistributeAux[arg_Plus]]:=
+ With[{assoc=GroupBy[List@@arg,FreeQ[distribute]]},
+  With[{keep=Lookup[assoc,True,{}],dist=Lookup[assoc,False,{}]},
+   With[{res=DeleteCases[Join[{Plus@@keep},dist],0]},
+    If[Length[res]<=1,pNoDist,pToDist]@@res]]];
+HoldPattern[pDistributeAux[arg_]]:=pNoDist[arg];
+
+(*pSortFactors[arg_] finds Power, Times and NonCommutativeMultiply nested
+in each other at top-level, turns Times into pTimes (to circumvent the
+Orderless Attribute) and sorts its arguments according to pOrder.
+It also turns NonCommutativeMultiply into pNonCommutativeMultiply.*)
+ClearAll[pSortFactors];
+HoldPattern[pSortFactors[arg_NonCommutativeMultiply]]:=
+ pSortFactors/@pNonCommutativeMultiply@@arg;
+HoldPattern[pSortFactors[arg_Power]]:=
+ pSortFactors/@arg;
+HoldPattern[pSortFactors[arg_Times]]:=
+ Sort[pSortFactors/@pTimes@@arg,pOrder[#1,#2]>=0&]; (*TODO: we sort factors twice*)
+HoldPattern[pSortFactors[arg_]]:=arg;
+(*TODO: think whether pSortFactors should care about option Only.*)
+
+(*pFlattenProd flattens product into pNonCommutativeMultiply[__pTimes] with
+no further nesting.  Also integer powers into pTimes with repeated factors.*)
+HoldPattern[pFlattenProd[arg_pNonCommutativeMultiply]]:=
+ Join@@pFlattenProd/@arg;
+HoldPattern[pFlattenProd[arg_pTimes]]:=
+ mark[{},pFlattenProd/@List@@arg]//.
+  mark[{a___},{b___,Longest[c:pNonCommutativeMultiply[_]..],d___}]:>
+   mark[{a,b,pNonCommutativeMultiply[Join@@First/@{c}]},{d}]/.
+  mark[{a___},{b___}]:>Join[a,b];
+HoldPattern[pFlattenProd[Power[x_,n_Integer?Positive]]]:=
+ If[Length[#]>1,
+  Join@@ConstantArray[#,n],
+  pNonCommutativeMultiply[Join@@ConstantArray[First[#],n]]]&[pFlattenProd[x]];
+HoldPattern[pFlattenProd[arg_]]:=pNonCommutativeMultiply[pTimes[arg]];
+
+(*pExpandTop receives the result of pFlattenProd, after the argument
+has been made a fixed point of pDistribute[pExpandFactors[#]]& and
+has gone through pSortFactors.  Namely we now have
+pNonCommutativeMultiply[__pTimes].  The goal is to apply pProd rules
+to neighboring factors.*)
+HoldPattern[pExpandTop[arg_pNonCommutativeMultiply]]:=
+ mark[List@@arg,False]//.{
+   mark[{a___,pTimes[b___,x_,y_,c___],d___},ch_]:>
+    With[{p=pProdExpr[x**y]},
+      mark[{a,pTimes[b,p,c],d},ch]/;Not[MatchQ[p,Hold[x**y]|Hold[y**x]|x y]]]
+  }//.{
+   mark[a:{___,pTimes[],___},ch_]:>mark[DeleteCases[a,pTimes[]],ch],
+   mark[{a___,b:pTimes[___,x:Except[_?(FreeQ[only])]],c:pTimes[y:Except[_?(FreeQ[only])],___],d___},ch_]:>
+    With[{p=pProdExpr[x**y]},
+     With[{res=
+       Switch[p,
+        Hold[x**y],Null,
+        Hold[y**x]|x y,
+         Which[
+          AllTrue[Most[b],MatchQ[pProdExpr[#**y],Hold[y**#]|y #]&],
+           mark[{a,
+            Insert[b,y,-FirstPosition[Reverse[b],t_/;pOrder[t,y]===1,{-1},{1},Heads->False][[1]]],
+            Rest[c],d},ch],(*
+           mark[{a,Join[b,pTimes[y]],Rest[c],d},ch],*)
+          pOrder[x,y]<0,
+           mark[{a,Most[b],pTimes[y,x],Rest[c],d},True],
+          True,Null],
+        _,mark[{a,Most[b],pTimes[p],Rest[c],d},True]]},
+      res/;res=!=Null]]
+   }/.{
+    mark[a_List,ch_]:>
+     If[ch,pExpand,expand][
+      pNonCommutativeMultiply@@a/.
+       {pNonCommutativeMultiply->NonCommutativeMultiply,pTimes->Times}]};
+HoldPattern[pExpandTop[arg_]]:=arg;
+(*TODO: Rethink when little expand should be used.*)
+
 (*pFactorList gives a list of factors, sorted by pOrder if the head is Times*)
 ClearAll[pFactorList];
 HoldPattern[pFactorList[arg_Times]]:=Sort[List@@arg,pOrder[#1,#2]>=0&];
 HoldPattern[pFactorList[arg_NonCommutativeMultiply]]:=List@@arg;
-(*pExpand*)
-ClearAll[pExpand,pExpandShallow,pExpandTimes,pExpandNcm];
-HoldPattern[pExpand[arg:_List|_Plus|_And|_Nand|_Or|_Nor|_Xor|_Not|
-  _Equal|_Less|_LessEqual|_Greater|_GreaterEqual]]:=pExpand/@arg;
-HoldPattern[pExpand[arg:_Times|_NonCommutativeMultiply|_Power]]:=
- pExpandShallow[pExpand/@arg];
-HoldPattern[pExpand[arg_]]:=expand[arg];
-(*pExpandShallow receives its argument after subparts have been through pExpand.
-The head may differ from the original argument of pExpand, due to evaluation.*)
-HoldPattern[pExpandShallow[arg_Times]]:=
- With[{ppd=pPrepDist/@pFactorList[arg]},
-  If[MemberQ[ppd,{_,__}],
-   pExpand[Plus@@Flatten[Outer[NonCommutativeMultiply,
-    {Times@@Flatten[Cases[ppd,{_}]]},
-    Sequence@@DeleteCases[ppd,{_}]]]],
-   (If[#2,pExpand,expand][Times@@#1]&)@@pExpandTimes[Flatten[ppd],False]]];
-HoldPattern[pExpandShallow[arg_NonCommutativeMultiply]]:=
- With[{expr=pDistribute[arg]},
-  Switch[Head[expr],
-   Plus|Power|Times,pExpand[expr],
-   NonCommutativeMultiply,
-   (If[#2,pExpand,expand][NonCommutativeMultiply@@#1]&)@@pExpandNcm[List@@expr,False]
-  ]];
-HoldPattern[pExpandShallow[Power[y_/;Not[NumericQ[y]],n_Integer?Positive]]]:=
- With[{zlist=pPrepDist[y]},
-  If[Length[zlist]=!=1,
-   pExpand[Plus@@Flatten[Outer[NonCommutativeMultiply,Sequence@@Table[zlist,{n}]]]],
-   With[{z=First[zlist]},
-    If[Head[z]=!=Times&&Head[z]=!=NonCommutativeMultiply,
-     With[{zn=pProdExpr[z^n]},If[zn===Hold[z^n],z^n,pExpand[zn]]],
-     With[{zf=pFactorList[z]},
-      If[#2,First[zf]**Sequence@@Flatten[Table[{Rest[zf],#1},{n-1}]]**Rest[zf],z^n]&@@
-pExpandNcm[{Last[zf],First[zf]},False]]]]]];
-HoldPattern[pExpandShallow[arg_Power]]:=expand[arg];
-HoldPattern[pExpandShallow[arg_]]:=pExpand[arg];
+
+(*(*pPrepDist[e1+e2+...] yields for instance pToDist[e3+e4+...,e1,e2,...],
+where the first item is a sum of the terms free of the pattern distribute,
+namely terms that should be kept together, and other terms are those that
+should be distributed.*)
+ClearAll[pPrepDist,pPrepFactorsDist];
+HoldPattern[pPrepDist[expr_Plus]]:=
+ With[{assoc=GroupBy[List@@expr,FreeQ[distribute]]},
+  With[{keep=Lookup[assoc,True,{}],dist=Lookup[assoc,False,{}]},
+   With[{res=DeleteCases[Join[{Plus@@keep},dist],0]},
+    If[Length[res]<=1,pNoDist,pToDist]@@res]]];
+HoldPattern[pPrepDist[expr_]]:=pNoDist[expr];
+HoldPattern[pPrepFactorsDist[expr:_pTimes|_NonCommutativeMultiply|_Power]]:=
+ pPrepFactorsDist/@expr;
+HoldPattern[pPrepFactorsDist[expr_]]:=pPrepDist[expr];
+*)
+(*
 (*pExpandTimes[arg_List, y_] gives pExpandTimes[result_List, True] or remains unevaluated.*)
 HoldPattern[pExpandTimes[{a___,b:Except[_?(FreeQ[only])],c:Except[_?(FreeQ[only])],d___},_]]:=
  With[{prod=pProdExpr[b**c]},pExpandTimes[{a,prod,d},True]
@@ -439,6 +529,7 @@ HoldPattern[pExpandTimes[{a___,b:Except[_?(FreeQ[only])],c:Except[_?(FreeQ[only]
 HoldPattern[pExpandNcm[{a___,b:Except[_?(FreeQ[only])],c:Except[_?(FreeQ[only])],d___},_]]:=
  With[{prod=pProdExpr[b**c]},pExpandNcm[{a,prod,d},True]
   /;prod=!=Hold[b**c]];
+*)
 
 (*SSCollect*)
 ClearAll[pTermList,pToPattList,pCollectPre,pCollect,pCollectRight,pCollectLeft]
