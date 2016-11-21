@@ -5,7 +5,7 @@ BeginPackage["SSAlgebra`",{"Macros`"}];
  NonCommutativeMultiply,
  SSExpand,
  SSCollect,
- SSMonomials,
+ SSMonomialRules,
  SSValidate,
  SSClass,
  SSOfClassQ,
@@ -24,11 +24,11 @@ Begin["`Private`"];
 Unprotect@@allfunctions;
 ClearAll@@allfunctions;
 
-(*TODO: in SSMonomials, sort the association by exponent*)
+(*TODO: in SSMonomialRules, sort the association by exponent*)
 (*TODO: maybe only look for commutativity (hence ugly brackets)
 in terms with only two factors and in factors of same class?*)
 (*TODO: in SSExpand, build a more clever order.*)
-(*TODO: in SSCollect and SSMonomials, build a more clever order for SSExpand,
+(*TODO: in SSCollect and SSMonomialRules, build a more clever order for SSExpand,
 as the current one breaks with e.g. patt={x,_,x}.*)
 (*TODO: document and implement SSCollect[expr,{x1,{{x2,{_,y2}},y1}}] for
 nested collection with more control on the left/right order.*)
@@ -94,20 +94,20 @@ $Distribute->patt$ and $Only->patt$ are passed to $SSExpand$ as options.  Just \
 like $SSExpand$, $SSCollect$ threads over lists, equations, inequalities and \
 logic functions.";
 
-SSMonomials::usage=Usage@"\
-$SSMonomials[expr, x]$ expands $expr$ and collects terms according to the \
+SSMonomialRules::usage=Usage@"\
+$SSMonomialRules[expr, x]$ expands $expr$ and collects terms according to the \
 power of (any variable matching) $x$ to the left of the expression.  The \
 result is given as an association whose keys are products of variables $x$ \
 and whose values are the corresponding coefficients.
 
-$SSMonomials[expr, {x1, x2..., _..., y2, y1}]$ gives nested associations \
+$SSMonomialRules[expr, {x1, x2..., _..., y2, y1}]$ gives nested associations \
 whose keys are products of variables matching $x1$, then $x2$ and so on, \
 then $y1$, $y2$, and so on.  The syntax is the same as $SSCollect$.
 
-$SSMonomials[expr, vars, h]$ applies $h$ to each coefficient.
+$SSMonomialRules[expr, vars, h]$ applies $h$ to each coefficient.
 
 $Distribute->patt$ and $Only->patt$ are passed to $SSExpand$ as options.  \
-$SSMonomials$ threads over lists in $expr$.";
+$SSMonomialRules$ threads over lists in $expr$.";
 
 SSValidate::usage=Usage@"\
 $SSValidate[expr]$ checks that usual (commutative) multiplication is only used \
@@ -617,11 +617,11 @@ HoldPattern[pCollectRight[expr:Power[x_,n_],patt_]]:=
 HoldPattern[pCollectRight[expr_,patt_]]:=
  If[MatchQ[expr,patt],{1,expr},{expr,1}];
 
-(*SSMonomials*)
+(*SSMonomialRules*)
 ClearAll[pMonomialsPre,pMonomials];
-SyntaxInformation[SSMonomials]={"ArgumentsPattern"->{_,_,_.,OptionsPattern[]}};
-Options[SSMonomials]={"Distribute"->_,"Only"->_};
-HoldPattern[SSMonomials[expr_,p_,h:Except[_List|_Rule|_RuleDelayed]:(#&),Longest[opts:OptionsPattern[]]]]:=
+SyntaxInformation[SSMonomialRules]={"ArgumentsPattern"->{_,_,_.,OptionsPattern[]}};
+Options[SSMonomialRules]={"Distribute"->_,"Only"->_};
+HoldPattern[SSMonomialRules[expr_,p_,h:Except[_List|_Rule|_RuleDelayed]:(#&),Longest[opts:OptionsPattern[]]]]:=
  With[{patts=pToPattList[p]},
   With[{expanded=SSExpand[expr,FilterRules[{opts},Options[SSExpand]],"Order"->patts]},
    pMonomialsPre[h,expanded,Sequence@@patts]]]
@@ -689,6 +689,6 @@ Unprotect[SSClass];
 
 End[];
 EndPackage[];
-"The SSAlgebra package provides the commands SSExpand, SSCollect, SSMonomials, \
+"The SSAlgebra package provides the commands SSExpand, SSCollect, SSMonomialRules, \
 SSValidate, SSClass, SSOfClassQ, SSOrder, SSClassOrder, SSOrderWithinClass, \
 SSDeclareProduct, SSDeclareCommutator, SSDeclareAnticommutator, PartialD, $SSMaxPower"
