@@ -1,22 +1,22 @@
 (* ::Package:: *)
 
-BeginPackage["SSAlgebra`",{"Macros`"}];
+BeginPackage["AAlgebra`",{"Macros`"}];
 `Private`allfunctions=Hold[
  NonCommutativeMultiply,
- SSExpand,
- SSCollect,
- SSMonomialRules,
- SSValidate,
- SSClass,
- SSOfClassQ,
- SSOrder,
- SSClassOrder,
- SSOrderWithinClass,
- SSDeclareProduct,
- SSDeclareCommutator,
- SSDeclareAnticommutator,
+ AExpand,
+ ACollect,
+ AMonomialRules,
+ AValidate,
+ AClass,
+ AOfClassQ,
+ AOrder,
+ AClassOrder,
+ AOrderWithinClass,
+ ADeclareProduct,
+ ADeclareCommutator,
+ ADeclareAnticommutator,
  PartialD,
- $SSMaxPower
+ $AMaxPower
 ];
 
 Begin["`Private`"];
@@ -24,16 +24,16 @@ Begin["`Private`"];
 Unprotect@@allfunctions;
 ClearAll@@allfunctions;
 
-(*TODO: in SSMonomialRules, sort the association by exponent*)
+(*TODO: in AMonomialRules, sort the association by exponent*)
 (*TODO: maybe only look for commutativity (hence ugly brackets)
 in terms with only two factors and in factors of same class?*)
-(*TODO: in SSExpand, build a more clever order.*)
-(*TODO: in SSCollect and SSMonomialRules, build a more clever order for SSExpand,
+(*TODO: in AExpand, build a more clever order.*)
+(*TODO: in ACollect and AMonomialRules, build a more clever order for AExpand,
 as the current one breaks with e.g. patt={x,_,x}.*)
-(*TODO: document and implement SSCollect[expr,{x1,{{x2,{_,y2}},y1}}] for
+(*TODO: document and implement ACollect[expr,{x1,{{x2,{_,y2}},y1}}] for
 nested collection with more control on the left/right order.*)
 (*TODO: write proper documentation pages, shorten usage strings.*)
-(*TODO: the final SSExpand in SSCollect is a bit too eager and may send
+(*TODO: the final AExpand in ACollect is a bit too eager and may send
 a(b**c) to (ab)**c when we try to collect {_,b|c}.*)
 
 (*Usage["The expression $a/b+a/b$ is equal to $2a/b$"] will pretty-print
@@ -46,78 +46,78 @@ StringReplace[str,"$"~~Shortest[a___]~~"$":>
             expr/.x_Symbol:>With[{y=If[LowerCaseQ[ToString[x]],Style[x,"TI"],x]},y/;True],
             StandardForm],InputForm]]]];
 
-SSExpand::usage=Usage@"\
-$SSExpand[expr, options]$ or equivalently $SSExpand[options][expr]$ \
+AExpand::usage=Usage@"\
+$AExpand[expr, options]$ or equivalently $AExpand[options][expr]$ \
 distributes non-commutative products and applies commutation rules and product \
-rules (see $SSDeclareAnticommutator$, $SSDeclareCommutator$, $SSDeclareProduct$) in \
-an effort to order factors according to the preferred order (see $SSOrder$).
+rules (see $ADeclareAnticommutator$, $ADeclareCommutator$, $ADeclareProduct$) in \
+an effort to order factors according to the preferred order (see $AOrder$).
 
 The product is assumed to be associative: when evaluating $a**b**c$ there is no \
 guarantee on whether a rule for $a**b$ or for $b**c$ will apply first. \
 
-The function $Expand$ is applied where relevant.  Just like $Expand$, $SSExpand$ \
+The function $Expand$ is applied where relevant.  Just like $Expand$, $AExpand$ \
 threads over lists, equations, inequalities and logic functions.
 
-$Distribute->patt$ prevents $SSExpand$ from distributing terms free of $patt$: if \
+$Distribute->patt$ prevents $AExpand$ from distributing terms free of $patt$: if \
 $a$ and $b$ match $patt$ and $x$ and $y$ do not then $(x+y+a+b^2)**(x+y+b)$ becomes \
 $(x+y)^2+(x+y)**b+a**(x+y)+a**b+b^2**(x+y)+b^3$.
 
-$Only->patt$ prevents $SSExpand$ from applying commutation and product rules for \
-factors free of $patt$.  A useful pattern is $_?(SSOfClassQ[class])$.
+$Only->patt$ prevents $AExpand$ from applying commutation and product rules for \
+factors free of $patt$.  A useful pattern is $_?(AOfClassQ[class])$.
 
-$Order->{x,y...}$ causes $SSExpand$ to use as the preferred order the order \
+$Order->{x,y...}$ causes $AExpand$ to use as the preferred order the order \
 where variables matching $x$ are placed to the left of those matching $y$, \
 and so on, ending with variables that match none of the patterns.  Variables \
-matching the same pattern are ordered according to the default order $SSOrder$. \
+matching the same pattern are ordered according to the default order $AOrder$. \
 The pattern $_$ is treated specially: it only matches if no other pattern \
 matches (using $_$ twice is an error).  If a variable matches several \
 patterns there is no guarantee on which one matches.
 
-$Expand->patt$ causes $SSExpand$ to apply $Expand[#,patt]&$ instead of \
+$Expand->patt$ causes $AExpand$ to apply $Expand[#,patt]&$ instead of \
 $Expand$.  To disable $Expand$ completely use the pattern $Except[_]$.";
 
-SSCollect::usage=Usage@"\
-$SSCollect[expr, x]$ expands $expr$ using $SSExpand$ then collects together \
+ACollect::usage=Usage@"\
+$ACollect[expr, x]$ expands $expr$ using $AExpand$ then collects together \
 terms with the same power of (any variable matching) $x$.  The $x$ are factored \
 towards the left of the expression.
 
-$SSCollect[expr, {x1, x2..., _..., y2, y1}]$ expands $expr$ using $SSExpand$, \
+$ACollect[expr, {x1, x2..., _..., y2, y1}]$ expands $expr$ using $AExpand$, \
 then collects terms according to the powers of (variables matching) $x1$, and \
 in each coefficient collects terms according to the powers of $x2$, and so \
 on until reaching the general pattern $_$ in the pattern list.  Then powers \
 of $y1$ are collected to the right, and in each coefficient powers of $y2$, \
 and so on.
 
-$SSCollect[expr, vars, h]$ applies $h$ to each coefficient.
+$ACollect[expr, vars, h]$ applies $h$ to each coefficient.
 
-$Distribute->patt$ and $Only->patt$ are passed to $SSExpand$ as options.  Just \
-like $SSExpand$, $SSCollect$ threads over lists, equations, inequalities and \
+$Distribute->patt$ and $Only->patt$ are passed to $AExpand$ as options.  Just \
+like $AExpand$, $ACollect$ threads over lists, equations, inequalities and \
 logic functions.";
 
-SSMonomialRules::usage=Usage@"\
-$SSMonomialRules[expr, x]$ expands $expr$ and collects terms according to the \
+AMonomialRules::usage=Usage@"\
+$AMonomialRules[expr, x]$ expands $expr$ and collects terms according to the \
 power of (any variable matching) $x$ to the left of the expression.  The \
 result is given as an association whose keys are products of variables $x$ \
 and whose values are the corresponding coefficients.
 
-$SSMonomialRules[expr, {x1, x2..., _..., y2, y1}]$ gives nested associations \
+$AMonomialRules[expr, {x1, x2..., _..., y2, y1}]$ gives nested associations \
 whose keys are products of variables matching $x1$, then $x2$ and so on, \
-then $y1$, $y2$, and so on.  The syntax is the same as $SSCollect$.
+then $y1$, $y2$, and so on.  The syntax is the same as $ACollect$.
 
-$SSMonomialRules[expr, vars, h]$ applies $h$ to each coefficient.
+$AMonomialRules[expr, vars, h]$ applies $h$ to each coefficient.
 
-$Distribute->patt$ and $Only->patt$ are passed to $SSExpand$ as options.  \
-$SSMonomialRules$ threads over lists in $expr$.";
+$Distribute->patt$ and $Only->patt$ are passed to $AExpand$ as options.  \
+$AMonomialRules$ threads over lists in $expr$.";
 
-SSValidate::usage=Usage@"\
-$SSValidate[expr]$ checks that usual (commutative) multiplication is only used \
+AValidate::usage=Usage@"\
+$AValidate[expr]$ checks that usual (commutative) multiplication is only used \
 in $expr$ with factors that commute.  If yes, it yields True, otherwise False. \
 Other validation steps might be added in the future.";
 
-SSClass::usage=Usage@"\
-$SSClass[var]$ gives the class of $var$.  The class of a variable affects the \
+AClass::usage=Usage@"\
+$AClass[var]$ gives the class of $var$.  The class of a variable affects the \
 preferred ordering in products.  It is declared in the same way as usual \
-functions, namely $SSClass[patt_]:=c$ declares that variables matching the pattern \
+functions, namely $AClass[patt_]:=c$ declares that variables matching the pattern \
 $patt$ have class $c$.  This declaration also adds $c$ (if it is new) to the list of \
 classes, whose order defines the default ordering of classes.
 
@@ -127,78 +127,78 @@ converted to a commutative product.
 
 The class \"scalar\" is predefined for variables that commute with all others \
 except those of class \"differential\" (see below).  Declaring that $x$ is a \
-scalar is done with $SSClass[x]:=\"scalar\"$.
+scalar is done with $AClass[x]:=\"scalar\"$.
 
 The class \"differential\" is predefined for differential operators.  It \
 includes $PartialD[x]$ (see $PartialD$).";
 
-SSOfClassQ::usage=Usage@"\
-$SSOfClassQ[patt][var]$ is $True$ if $SSClass[var]$ matches the pattern $patt$. \
-Thus, the pattern $_?(SSOfClassQ[patt])$ matches members of any class \
+AOfClassQ::usage=Usage@"\
+$AOfClassQ[patt][var]$ is $True$ if $AClass[var]$ matches the pattern $patt$. \
+Thus, the pattern $_?(AOfClassQ[patt])$ matches members of any class \
 matched by $patt$.";
 
-SSOrder::usage=Usage@"\
-$SSOrder[x, y]$ indicates the preferred order of the variables $x$ and $y$ in \
+AOrder::usage=Usage@"\
+$AOrder[x, y]$ indicates the preferred order of the variables $x$ and $y$ in \
 non-commutative products, to determine whether applicable commutation rules \
 should be used.  It is $1$ if $x**y$ is preferred, $-1$ if $y**x$ is, and $0$ if $x===y$. \
-It is important that $SSOrder[x, y] == -SSOrder[y, x]$.
+It is important that $AOrder[x, y] == -AOrder[y, x]$.
 
-The default order relies on comparing the variables' classes $SSClass[x]$ and \
-$SSClass[y]$ using $SSClassOrder$.  If this gives $0$ (for instance if $x$ and $y$ have \
-the same class) then $x$ and $y$ are compared using $SSOrderWithinClass$, typically \
+The default order relies on comparing the variables' classes $AClass[x]$ and \
+$AClass[y]$ using $AClassOrder$.  If this gives $0$ (for instance if $x$ and $y$ have \
+the same class) then $x$ and $y$ are compared using $AOrderWithinClass$, typically \
 the standard $Order$.";
 
-SSClassOrder::usage=Usage@"\
-$SSClassOrder[c, d]$ gives $1$ if variables of class $c$ should be ordered before \
+AClassOrder::usage=Usage@"\
+$AClassOrder[c, d]$ gives $1$ if variables of class $c$ should be ordered before \
 those of class $d$ in non-commutative products (using available commutation rules), \
 $-1$ if they should be ordered after, and $0$ if the order is indifferent.  In this \
-last case (including the case $c===d$), $SSOrderWithinClass$ is used to determine \
-the order.  It is important that $SSClassOrder[d, c] == -SSClassOrder[c, d]$.
+last case (including the case $c===d$), $AOrderWithinClass$ is used to determine \
+the order.  It is important that $AClassOrder[d, c] == -AClassOrder[c, d]$.
 
-By default, $SSClassOrder$ is the order in which classes are declared using \
-$SSClass[patt]:=c$, except for the class \"differential\" which is placed to the \
+By default, $AClassOrder$ is the order in which classes are declared using \
+$AClass[patt]:=c$, except for the class \"differential\" which is placed to the \
 very right.";
 
-SSOrderWithinClass::usage=Usage@"\
-$SSOrderWithinClass[x, y, classx, classy]$ is used to determine the preferred \
-order $SSOrder[x, y]$ of $x$ and $y$ when comparing their classes is not enough \
-(when $SSClassOrder$ gives $0$).  By default this is the standard $Order[x, y]$.
+AOrderWithinClass::usage=Usage@"\
+$AOrderWithinClass[x, y, classx, classy]$ is used to determine the preferred \
+order $AOrder[x, y]$ of $x$ and $y$ when comparing their classes is not enough \
+(when $AClassOrder$ gives $0$).  By default this is the standard $Order[x, y]$.
 
 The classes of $x$ and $y$ are included here among the arguments so that one can \
 more easily defined a custom order for variables of a specific class.  It is \
-important that $SSOrderWithinClass[y, x, classy, classx] == \
--SSOrderWithinClass[x, y, classx, classy]$.";
+important that $AOrderWithinClass[y, x, classy, classx] == \
+-AOrderWithinClass[x, y, classx, classy]$.";
 
-SSDeclareProduct::usage=Usage@"\
-$SSDeclareProduct[x**y :> rhs...]$ declares one or more rules for the \
+ADeclareProduct::usage=Usage@"\
+$ADeclareProduct[x**y :> rhs...]$ declares one or more rules for the \
 product of two variables (or patterns), namely it declares $x**y$ equal to $rhs$. \
-A condition can be included in the $rhs$: $SSDeclareProduct[x**y:>expr/;cond]$. \
-By default, this rule is only used by $SSExpand$ if $x$ and $y$ are not in the \
+A condition can be included in the $rhs$: $ADeclareProduct[x**y:>expr/;cond]$. \
+By default, this rule is only used by $AExpand$ if $x$ and $y$ are not in the \
 preferred order.
 
 $Apply->True$ causes the rules being declared to be applied even if $x**y$ is \
 already in the preferred order (including the case where they coincide). \
 This may lead to infinite recursion if the right-hand side involves $y**x$.";
 
-SSDeclareCommutator::usage=Usage@"\
-$SSDeclareCommutator[{x,y} :> rhs...]$ declares one or more rules for the \
+ADeclareCommutator::usage=Usage@"\
+$ADeclareCommutator[{x,y} :> rhs...]$ declares one or more rules for the \
 commutator of two variables (or patterns), namely it declares $x**y$ equal to \
 $y**x+rhs$ (and conversely $y**x$ equal to $x**y-rhs$).  This rule is used by \
-$SSExpand$ to bring products in the preferred order.";
+$AExpand$ to bring products in the preferred order.";
 
-SSDeclareAnticommutator::usage=Usage@"\
-$SSDeclareAnticommutator[{x,y} :> rhs...]$ declares one or more rules for \
+ADeclareAnticommutator::usage=Usage@"\
+$ADeclareAnticommutator[{x,y} :> rhs...]$ declares one or more rules for \
 the anticommutator of two variables (or patterns), namely it declares $x**y$ \
 equal to $-y**x+rhs$ (and conversely $y**x$ equal to $-x**y+rhs$).  It also takes \
 care of the case where $x$ and $y$ are equal: $x**x$ is declared to be $rhs/2$.  This \
-rule is used by $SSExpand$ to bring products in the preferred order.";
+rule is used by $AExpand$ to bring products in the preferred order.";
 
 PartialD::usage=Usage@"\
 $PartialD[x_]$ represents the partial derivative operator with respect to the \
 (scalar) variable $x$.  In products, it can be commuted through any \
 expression using $PartialD[x]**y - y**PartialD[x] == D[y, x]$.";
 
-$SSMaxPower=100;
+$AMaxPower=100;
 
 (*Before declaring any global rule which involves NonCommutativeMultiply we
 make sure to remove its attributes Flat and OneIdentity by running ClearAll[NonCommutativeMultiply].
@@ -221,45 +221,45 @@ NonCommutativeMultiply/:HoldPattern[Expand[x_NonCommutativeMultiply,patt_]]:=
 
 
 
-(*SSClass[var] user-defined class of var.
+(*AClass[var] user-defined class of var.
 pClassPos[class] helps control the preferred order.
 pClassQ[str_String] is True if str is a class name.*)
 ClearAll[pClassQ,pClassPos];
 pClassQ[class_String]:=(Head[pClassPos[class]]=!=pClassPos);
-SyntaxInformation[SSClass]={"ArgumentsPattern"->{_}};
-SetArgumentCount[SSClass,1];
+SyntaxInformation[AClass]={"ArgumentsPattern"->{_}};
+SetArgumentCount[AClass,1];
 plastcp=0;
-SSClass/:HoldPattern[(Set|SetDelayed|TagSet|TagSetDelayed)
-  [___,SSClass[___],class_String]/;
+AClass/:HoldPattern[(Set|SetDelayed|TagSet|TagSetDelayed)
+  [___,AClass[___],class_String]/;
   If[Not[pClassQ[class]],pClassPos[class]=(plastcp+=10)]]:=Null;
-SSClass[_?NumericQ]:="number";
-SSClass[]:="scalar";SSClass[]=.;(*Kludge to declare class "scalar" with right priority.*)
-SSClass[PartialD[_]]:="differential";
+AClass[_?NumericQ]:="number";
+AClass[]:="scalar";AClass[]=.;(*Kludge to declare class "scalar" with right priority.*)
+AClass[PartialD[_]]:="differential";
 pClassPos["differential"]=100000;
 
-(*SSOfClassQ[class_][var_]*)
-SyntaxInformation[SSOfClassQ]={"ArgumentsPattern"->{_}};
-SetArgumentCount[SSOfClassQ,1];
-SSOfClassQ/:HoldPattern[Verbatim[PatternTest][_,SSOfClassQ]]:=
- Null/;Message[SSOfClassQ::pattx];
-HoldPattern[SSOfClassQ[class_String]/;
- If[Not[pClassQ[class]],Message[SSClass::unknown,class]]]:=Null;
-HoldPattern[SSOfClassQ[class_]]:=(MatchQ[SSClass[#],class]&);
+(*AOfClassQ[class_][var_]*)
+SyntaxInformation[AOfClassQ]={"ArgumentsPattern"->{_}};
+SetArgumentCount[AOfClassQ,1];
+AOfClassQ/:HoldPattern[Verbatim[PatternTest][_,AOfClassQ]]:=
+ Null/;Message[AOfClassQ::pattx];
+HoldPattern[AOfClassQ[class_String]/;
+ If[Not[pClassQ[class]],Message[AClass::unknown,class]]]:=Null;
+HoldPattern[AOfClassQ[class_]]:=(MatchQ[AClass[#],class]&);
 
-(*SSOrder[x, y] in terms of SSClassOrder[c, d] and SSOrderWithinClass[x, y, c, d]*)
-SyntaxInformation[SSOrder]={"ArgumentsPattern"->{_,_}};
-SetArgumentCount[SSOrder,2];
-HoldPattern[SSOrder[x_, y_]]:=
- With[{cx=SSClass[x],cy=SSClass[y]},
-      Switch[SSClassOrder[cx,cy],1,1,-1,-1,
-             _,SSOrderWithinClass[x,y,cx,cy]]];
-SyntaxInformation[SSClassOrder]={"ArgumentsPattern"->{_,_}};
-SetArgumentCount[SSClassOrder,2];
-HoldPattern[SSClassOrder[c_String?pClassQ,d_String?pClassQ]]:=
+(*AOrder[x, y] in terms of AClassOrder[c, d] and AOrderWithinClass[x, y, c, d]*)
+SyntaxInformation[AOrder]={"ArgumentsPattern"->{_,_}};
+SetArgumentCount[AOrder,2];
+HoldPattern[AOrder[x_, y_]]:=
+ With[{cx=AClass[x],cy=AClass[y]},
+      Switch[AClassOrder[cx,cy],1,1,-1,-1,
+             _,AOrderWithinClass[x,y,cx,cy]]];
+SyntaxInformation[AClassOrder]={"ArgumentsPattern"->{_,_}};
+SetArgumentCount[AClassOrder,2];
+HoldPattern[AClassOrder[c_String?pClassQ,d_String?pClassQ]]:=
  If[pClassQ[c]&&pClassQ[d],Order[pClassPos[c],pClassPos[d]],0];
-SyntaxInformation[SSOrderWithinClass]={"ArgumentsPattern"->{_,_,_,_}};
-SetArgumentCount[SSOrderWithinClass,4];
-HoldPattern[SSOrderWithinClass[x_,y_,_,_]]:=Order[x,y];
+SyntaxInformation[AOrderWithinClass]={"ArgumentsPattern"->{_,_,_,_}};
+SetArgumentCount[AOrderWithinClass,4];
+HoldPattern[AOrderWithinClass[x_,y_,_,_]]:=Order[x,y];
 
 (*TODO:remove many rules of pProdExpr, now useless.*)
 (*Second argument of pProd is of the form x**y.
@@ -317,9 +317,9 @@ ClearAll[pDeclareProduct];
 SetAttributes[pDeclareProduct,HoldAll];
 HoldPattern[pDeclareProduct[(rule:Rule|RuleDelayed)[lhs_,rhs_],always_]]:=
  With[{order=If[always,_,-1]},pRuleToSet[rule][HoldPattern[pProd[order,lhs]],rhs]];
-Options[SSDeclareProduct]={"Apply"->False};
-SetAttributes[SSDeclareProduct,HoldAll];
-HoldPattern[SSDeclareProduct[rules:((Rule|RuleDelayed)[_**_,_])...,OptionsPattern[]]]:=
+Options[ADeclareProduct]={"Apply"->False};
+SetAttributes[ADeclareProduct,HoldAll];
+HoldPattern[ADeclareProduct[rules:((Rule|RuleDelayed)[_**_,_])...,OptionsPattern[]]]:=
  With[{always=OptionValue[Apply]},Scan[pDeclareProduct[#,always]&,Hold[rules]]];
 (*Declaring commutators: some work needed to force x**y\[RuleDelayed]x*y when commutator evaluates to 0.*)
 ClearAll[pDeclareCommutator];
@@ -329,8 +329,8 @@ HoldPattern[pDeclareCommutator[(rule:Rule|RuleDelayed)[{x_,y_},rhs_]]]:=
    With[{r=rhs},If[r===0,p q,q**p+r]/;r===0||o===-1]];
   pRuleToSet[rule][HoldPattern[pProd[o_,(q:y)**(p:x)]],
    With[{r=rhs},If[r===0,p q,p**q-r]/;r===0||o===-1]];);
-SetAttributes[SSDeclareCommutator,HoldAll];
-HoldPattern[SSDeclareCommutator[rules:((Rule|RuleDelayed)[{_,_},_])...]]:=
+SetAttributes[ADeclareCommutator,HoldAll];
+HoldPattern[ADeclareCommutator[rules:((Rule|RuleDelayed)[{_,_},_])...]]:=
  Scan[pDeclareCommutator,Hold[rules]];
 (*Declaring anticommutator*)
 ClearAll[pDeclareAnticommutator];
@@ -339,12 +339,12 @@ HoldPattern[pDeclareAnticommutator[(rule:Rule|RuleDelayed)[{x_,y_},rhs_],always_
  (pDeclareProduct[rule[(p:x)**(q:y),-q**p+rhs],False];
   pDeclareProduct[rule[(q:y)**(p:x),-p**q+rhs],False];
   pDeclareProduct[rule[(p:x)**(p:y),rhs/2],always];);
-Options[SSDeclareAnticommutator]={"Apply"->True};
-SetAttributes[SSDeclareAnticommutator,HoldAll];
-HoldPattern[SSDeclareAnticommutator[rules:((Rule|RuleDelayed)[{_,_},_])...,OptionsPattern[]]]:=
+Options[ADeclareAnticommutator]={"Apply"->True};
+SetAttributes[ADeclareAnticommutator,HoldAll];
+HoldPattern[ADeclareAnticommutator[rules:((Rule|RuleDelayed)[{_,_},_])...,OptionsPattern[]]]:=
  With[{always=OptionValue[Apply]},Scan[pDeclareAnticommutator[#,always]&,Hold[rules]]];
 
-(*pTmpPos[var] gives inverse map of the Order option of SSExpand.
+(*pTmpPos[var] gives inverse map of the Order option of AExpand.
 pOrder gives the current preferred order.*)
 ClearAll[pTmpPos,pOrder];
 HoldPattern[pTmpPos[_]]:=1;
@@ -359,20 +359,20 @@ HoldPattern[pOrder[x_Hold,y_Hold]]:=
 HoldPattern[pOrder[x_Hold,y_]]:=pOrder[x,Hold[y]];
 HoldPattern[pOrder[x_,y_Hold]]:=pOrder[Hold[x],y];
 HoldPattern[pOrder[x_,y_]]:=
- Switch[Order[pTmpPos[x],pTmpPos[y]],1,1,-1,-1,_,SSOrder[x,y]];
+ Switch[Order[pTmpPos[x],pTmpPos[y]],1,1,-1,-1,_,AOrder[x,y]];
 
-(*SSExpand[expr, options___] or SSExpand[options___][expr]
+(*AExpand[expr, options___] or AExpand[options___][expr]
 distributes and applies commutation/product rules.
 Distribute\[Rule]patt only "distribute out" terms matching patt.
 Expand\[Rule]patt uses (Expand[#,patt]&) instead of Expand.
 Only\[Rule]patt only apply rules to factors matching patt.
 Order\[Rule]{patt1,...} preferred order, _ is special, two _ is error.*)
-SyntaxInformation[SSExpand]={"ArgumentsPattern"->{_.,OptionsPattern[]}};
-Options[SSExpand]={"Distribute"->_,"Expand"->Sequence[],"Only"->_,"Order"->{_}};
-HoldPattern[SSExpand[expr___,opt:OptionsPattern[]]]:=
+SyntaxInformation[AExpand]={"ArgumentsPattern"->{_.,OptionsPattern[]}};
+Options[AExpand]={"Distribute"->_,"Expand"->Sequence[],"Only"->_,"Order"->{_}};
+HoldPattern[AExpand[expr___,opt:OptionsPattern[]]]:=
  With[{n=Length[{expr}],order=OptionValue["Order"]},
   If[n===0,
-   SSExpand[#1,opt,##2]&,
+   AExpand[#1,opt,##2]&,
    Block[{pTmpPos},
     pTmpPos[_]=Length[order]+1;
     MapIndexed[(pTmpPos[#1]=First[#2])&,order];
@@ -382,9 +382,9 @@ HoldPattern[SSExpand[expr___,opt:OptionsPattern[]]]:=
     only=OptionValue["Only"];
     pExpand[expr]
    ]]/;Which[
-  n>1,Message[SSExpand::argx,SSExpand,n],
-  Head[order]=!=List,Message[SSExpand::badopt,Order->order],
-  Count[order,Verbatim[_]]>=2,Message[SSExpand::badopt,Order->order],
+  n>1,Message[AExpand::argx,AExpand,n],
+  Head[order]=!=List,Message[AExpand::badopt,Order->order],
+  Count[order,Verbatim[_]]>=2,Message[AExpand::badopt,Order->order],
   True,True]]
 distribute=_;
 expand=Expand;
@@ -537,22 +537,22 @@ HoldPattern[pExpandNcm[{a___,b:Except[_?(FreeQ[only])],c:Except[_?(FreeQ[only])]
   /;prod=!=Hold[b**c]];
 *)
 
-(*SSCollect*)
+(*ACollect*)
 ClearAll[pTermList,pToPattList,pCollectPre,pCollect,pCollectRight,pCollectLeft]
 HoldPattern[pTermList[x_Plus]]:=List@@x;
 HoldPattern[pTermList[x_]]:={x};
 HoldPattern[pToPattList[p_]]:=
  If[MemberQ[#,Verbatim[_]],#,Join[#,{_}]]&[Flatten[{p}]];
-SyntaxInformation[SSCollect]={"ArgumentsPattern"->{_,_,_.,OptionsPattern[]}};
-Options[SSCollect]={"Distribute"->_,"Only"->_};
-HoldPattern[SSCollect[expr_,p_,h:Except[_List|_Rule|_RuleDelayed]:(#&),Longest[opts:OptionsPattern[]]]]:=
+SyntaxInformation[ACollect]={"ArgumentsPattern"->{_,_,_.,OptionsPattern[]}};
+Options[ACollect]={"Distribute"->_,"Only"->_};
+HoldPattern[ACollect[expr_,p_,h:Except[_List|_Rule|_RuleDelayed]:(#&),Longest[opts:OptionsPattern[]]]]:=
  With[{patts=pToPattList[p]},
-  With[{expanded=SSExpand[expr,FilterRules[{opts},Options[SSExpand]],"Order"->patts]},
+  With[{expanded=AExpand[expr,FilterRules[{opts},Options[AExpand]],"Order"->patts]},
    pCollectPre[h,expanded,Sequence@@patts]]];
 HoldPattern[pCollectPre[h_,expr:_List|_And|_Nand|_Or|_Nor|_Xor|_Not|_Equal|_Less|_LessEqual|_Greater|_GreaterEqual,patts___]]:=
  pCollectPre[h,#,patts]&/@expr;
 HoldPattern[pCollectPre[h_,expr_,patts___]]:=
- Block[{pOrder=0&},SSExpand[pCollect[h,pTermList[expr],patts],Distribute->Except[_],Expand->Except[_]]];
+ Block[{pOrder=0&},AExpand[pCollect[h,pTermList[expr],patts],Distribute->Except[_],Expand->Except[_]]];
 (*pCollect*)
 HoldPattern[pCollect[h_,expr_List]]:=
  h[Plus@@expr];
@@ -617,13 +617,13 @@ HoldPattern[pCollectRight[expr:Power[x_,n_],patt_]]:=
 HoldPattern[pCollectRight[expr_,patt_]]:=
  If[MatchQ[expr,patt],{1,expr},{expr,1}];
 
-(*SSMonomialRules*)
+(*AMonomialRules*)
 ClearAll[pMonomialsPre,pMonomials];
-SyntaxInformation[SSMonomialRules]={"ArgumentsPattern"->{_,_,_.,OptionsPattern[]}};
-Options[SSMonomialRules]={"Distribute"->_,"Only"->_};
-HoldPattern[SSMonomialRules[expr_,p_,h:Except[_List|_Rule|_RuleDelayed]:(#&),Longest[opts:OptionsPattern[]]]]:=
+SyntaxInformation[AMonomialRules]={"ArgumentsPattern"->{_,_,_.,OptionsPattern[]}};
+Options[AMonomialRules]={"Distribute"->_,"Only"->_};
+HoldPattern[AMonomialRules[expr_,p_,h:Except[_List|_Rule|_RuleDelayed]:(#&),Longest[opts:OptionsPattern[]]]]:=
  With[{patts=pToPattList[p]},
-  With[{expanded=SSExpand[expr,FilterRules[{opts},Options[SSExpand]],"Order"->patts]},
+  With[{expanded=AExpand[expr,FilterRules[{opts},Options[AExpand]],"Order"->patts]},
    pMonomialsPre[h,expanded,Sequence@@patts]]]
 HoldPattern[pMonomialsPre[h_,expr:_List,patts___]]:=
  pMonomialsPre[h,#,patts]&/@expr;
@@ -645,14 +645,14 @@ HoldPattern[pMonomials[h_,expr_List,a_,b___]]:=
   First->Last,
   pMonomials[h,pTermList[Total[#]],b]&];
 
-(*SSValidate*)
-SyntaxInformation[SSValidate]={"ArgumentsPattern"->{_}};
-SetArgumentCount[SSValidate,1]
-SetAttributes[SSValidate,HoldAll]
-HoldPattern[SSValidate[expr_Times]]:=
- And@@(SSExpand[#1**#2]===SSExpand[#2**#1]&)@@@Subsets[List@@expr,{2}];
-HoldPattern[SSValidate[expr_?AtomQ]]:=True;
-HoldPattern[SSValidate[expr_]]:=And@@Map[SSValidate,List@@expr];
+(*AValidate*)
+SyntaxInformation[AValidate]={"ArgumentsPattern"->{_}};
+SetArgumentCount[AValidate,1]
+SetAttributes[AValidate,HoldAll]
+HoldPattern[AValidate[expr_Times]]:=
+ And@@(AExpand[#1**#2]===AExpand[#2**#1]&)@@@Subsets[List@@expr,{2}];
+HoldPattern[AValidate[expr_?AtomQ]]:=True;
+HoldPattern[AValidate[expr_]]:=And@@Map[AValidate,List@@expr];
 
 (*pExprQ detects some common expressions to prevent them from being used as variables*)
 ClearAll[pExprQ,pScalarQ];
@@ -661,34 +661,34 @@ HoldPattern[pExprQ[_]]:=False;
 (*pScalarQ detects expressions involving only scalars*)
 HoldPattern[pScalarQ[_?NumericQ]]:=True;
 HoldPattern[pScalarQ[x:_Plus|_Times|_NonCommutativeMultiply|_Power]]:=AllTrue[x,pScalarQ];
-HoldPattern[pScalarQ[x_]]:=(SSClass[x]==="scalar");
+HoldPattern[pScalarQ[x_]]:=(AClass[x]==="scalar");
 (*PartialD*)
 HoldPattern[PartialD[]]:=1;
 HoldPattern[PartialD[var_]/;
  If[pExprQ[var]||NumericQ[var],
   Message[PartialD::notvar,var]]]:=Null;
-SSDeclareProduct[
+ADeclareProduct[
  (x_?pScalarQ)**(y_?pScalarQ):>x y,
  PartialD[x_?pScalarQ]**PartialD[y_?pScalarQ]:>PartialD[x]PartialD[y],
- (x_?pScalarQ)**(y_?(FreeQ[_?(SSOfClassQ["differential"])])):>x y,
- (y_?(FreeQ[_?(SSOfClassQ["differential"])]))**(x_?pScalarQ):>x y,
+ (x_?pScalarQ)**(y_?(FreeQ[_?(AOfClassQ["differential"])])):>x y,
+ (y_?(FreeQ[_?(AOfClassQ["differential"])]))**(x_?pScalarQ):>x y,
  Apply->True];
-SSDeclareCommutator[{PartialD[x_?(SSOfClassQ["scalar"])],(y_?pScalarQ)}:>D[y, x]];
+ADeclareCommutator[{PartialD[x_?(AOfClassQ["scalar"])],(y_?pScalarQ)}:>D[y, x]];
 HoldPattern[PartialD[a_?pScalarQ,b__?pScalarQ]]:=Times@@PartialD/@Hold[a,b];
 HoldPattern[PartialD[a_,b__]]:=NonCommutativeMultiply@@PartialD/@Hold[a,b];
 
 (*Messages*)
 PartialD::notvar="PartialD expects one or more variables as its arguments, not the expression or number `1`.";
-SSClass::unknown="The class `1` was not declared.";
-SSExpand::badopt="Option `1` for SSExpand is invalid."; 
-SSOfClassQ::pattx="SSOfClassQ used as \"?SSOfClassQ[...]\" instead of \"?(SSOfClassQ[...])\".";
+AClass::unknown="The class `1` was not declared.";
+AExpand::badopt="Option `1` for AExpand is invalid."; 
+AOfClassQ::pattx="AOfClassQ used as \"?AOfClassQ[...]\" instead of \"?(AOfClassQ[...])\".";
 
 Protect@@allfunctions;
 Protect[NonCommutativeMultiply];
-Unprotect[SSClass];
+Unprotect[AClass];
 
 End[];
 EndPackage[];
-"The SSAlgebra package provides the commands SSExpand, SSCollect, SSMonomialRules, \
-SSValidate, SSClass, SSOfClassQ, SSOrder, SSClassOrder, SSOrderWithinClass, \
-SSDeclareProduct, SSDeclareCommutator, SSDeclareAnticommutator, PartialD, $SSMaxPower"
+"The AAlgebra package provides the commands AExpand, ACollect, AMonomialRules, \
+AValidate, AClass, AOfClassQ, AOrder, AClassOrder, AOrderWithinClass, \
+ADeclareProduct, ADeclareCommutator, ADeclareAnticommutator, PartialD, $AMaxPower"

@@ -1,9 +1,8 @@
 Notebook[{
 Cell["\<\
-SSAlgebra implements noncommutative algebras with various commutation \
-relations (SS stands for super symmetry, but the package is more general).  \
-It turns out that using the NCAlgebra package is not so helpful.  To install \
-SSAlgebra I put SSAlgebra.wl in a directory SSAlgebra\
+AAlgebra implements noncommutative algebras with various commutation \
+relations.  It turns out that using the NCAlgebra package is not so helpful.  \
+To install AAlgebra I put AAlgebra.wl in a directory AAlgebra\
 \>", "Text",
  CellChangeTimes->{{3.6731859217284694`*^9, 3.6731859496154695`*^9}, {
   3.6731861413324695`*^9, 3.673186209936469*^9}, {3.6733719870443015`*^9, 
@@ -12,15 +11,16 @@ SSAlgebra I put SSAlgebra.wl in a directory SSAlgebra\
 Cell[CellGroupData[{
 
 Cell[BoxData[
- RowBox[{"<<", "SSAlgebra`"}]], "Input",
+ RowBox[{"<<", "AAlgebra`"}]], "Input",
  CellChangeTimes->{{3.676123749798984*^9, 3.676123754099452*^9}, {
   3.688508699076541*^9, 3.6885087170911913`*^9}}],
 
-Cell[BoxData["\<\"The SSAlgebra package provides the commands SSExpand, \
-SSCollect, SSMonomialRules, SSValidate, SSClass, SSOfClassQ, SSOrder, \
-SSClassOrder, SSOrderWithinClass, SSDeclareProduct, SSDeclareCommutator, \
-SSDeclareAnticommutator, PartialD, $SSMaxPower\"\>"], "Output",
- CellChangeTimes->{{3.688508686396872*^9, 3.6885087177078733`*^9}}]
+Cell[BoxData["\<\"The AAlgebra package provides the commands AExpand, \
+ACollect, AMonomialRules, AValidate, AClass, AOfClassQ, AOrder, AClassOrder, \
+AOrderWithinClass, ADeclareProduct, ADeclareCommutator, \
+ADeclareAnticommutator, PartialD, $AMaxPower\"\>"], "Output",
+ CellChangeTimes->{{3.688508686396872*^9, 3.6885087177078733`*^9}, 
+   3.707336412828252*^9}]
 }, Open  ]],
 
 Cell[CellGroupData[{
@@ -36,12 +36,12 @@ Cell[BoxData[
 Cell[BoxData[{
  RowBox[{
   RowBox[{
-   RowBox[{"SSClass", "[", "x", "]"}], "=", "\"\<scalar\>\""}], 
+   RowBox[{"AClass", "[", "x", "]"}], "=", "\"\<scalar\>\""}], 
   ";"}], "\[IndentingNewLine]", 
  RowBox[{
   RowBox[{"Assert", "[", 
    RowBox[{
-    RowBox[{"SSExpand", "[", 
+    RowBox[{"AExpand", "[", 
      RowBox[{
       RowBox[{"PartialD", "[", "x", "]"}], "**", 
       RowBox[{"x", "^", "2"}]}], "]"}], "===", 
@@ -54,7 +54,7 @@ Cell[BoxData[{
  RowBox[{
   RowBox[{"Assert", "[", 
    RowBox[{
-    RowBox[{"SSExpand", "[", 
+    RowBox[{"AExpand", "[", 
      RowBox[{"a", "**", 
       RowBox[{"(", 
        RowBox[{"b", "+", "c"}], ")"}], "**", "b"}], "]"}], "===", 
@@ -65,14 +65,14 @@ Cell[BoxData[{
   ";"}], "\[IndentingNewLine]", 
  RowBox[{
   RowBox[{
-   RowBox[{"SSClass", "[", "a", "]"}], "=", "\"\<scalar\>\""}], ";"}], "\n", 
+   RowBox[{"AClass", "[", "a", "]"}], "=", "\"\<scalar\>\""}], ";"}], "\n", 
  RowBox[{
   RowBox[{
-   RowBox[{"SSClass", "[", "b", "]"}], "=", "\"\<scalar\>\""}], ";"}], "\n", 
+   RowBox[{"AClass", "[", "b", "]"}], "=", "\"\<scalar\>\""}], ";"}], "\n", 
  RowBox[{
   RowBox[{"Assert", "[", 
    RowBox[{
-    RowBox[{"SSExpand", "[", 
+    RowBox[{"AExpand", "[", 
      RowBox[{"a", "**", 
       RowBox[{"(", 
        RowBox[{"b", "+", "c"}], ")"}], "**", "b"}], "]"}], "===", 
@@ -82,13 +82,13 @@ Cell[BoxData[{
      RowBox[{"a", " ", "b", " ", "c"}]}]}], "]"}], ";"}], "\n", 
  RowBox[{
   RowBox[{
-   RowBox[{"SSClass", "[", "x", "]"}], "=."}], ";"}], "\[IndentingNewLine]", 
+   RowBox[{"AClass", "[", "x", "]"}], "=."}], ";"}], "\[IndentingNewLine]", 
  RowBox[{
   RowBox[{
-   RowBox[{"SSClass", "[", "a", "]"}], "=."}], ";"}], "\[IndentingNewLine]", 
+   RowBox[{"AClass", "[", "a", "]"}], "=."}], ";"}], "\[IndentingNewLine]", 
  RowBox[{
   RowBox[{
-   RowBox[{"SSClass", "[", "b", "]"}], "=."}], ";"}]}], "Input",
+   RowBox[{"AClass", "[", "b", "]"}], "=."}], ";"}]}], "Input",
  CellChangeTimes->{3.6763300610605383`*^9}],
 
 Cell[BoxData[{
@@ -105,7 +105,7 @@ Cell[BoxData[{
  RowBox[{
   RowBox[{"Assert", "[", 
    RowBox[{
-    RowBox[{"SSExpand", "[", 
+    RowBox[{"AExpand", "[", 
      RowBox[{
       RowBox[{"(", 
        RowBox[{"1", "/", 
@@ -116,7 +116,7 @@ Cell[BoxData[{
       RowBox[{"n", "-", "m"}], ")"}]}]}], "]"}], ";", 
   RowBox[{"Assert", "[", 
    RowBox[{
-    RowBox[{"SSExpand", "[", 
+    RowBox[{"AExpand", "[", 
      RowBox[{
       RowBox[{"(", 
        RowBox[{"1", "+", 
@@ -133,7 +133,7 @@ Cell[BoxData[{
  RowBox[{
   RowBox[{"Assert", "[", 
    RowBox[{
-    RowBox[{"SSExpand", "[", 
+    RowBox[{"AExpand", "[", 
      RowBox[{
       RowBox[{"(", 
        RowBox[{
@@ -156,13 +156,13 @@ Cell[BoxData[{
  RowBox[{
   RowBox[{"Assert", "[", 
    RowBox[{
-    RowBox[{"SSCollect", "[", 
+    RowBox[{"ACollect", "[", 
      RowBox[{"x", ",", "x"}], "]"}], "===", "x"}], "]"}], 
   ";"}], "\[IndentingNewLine]", 
  RowBox[{
   RowBox[{"Assert", "[", 
    RowBox[{
-    RowBox[{"SSCollect", "[", 
+    RowBox[{"ACollect", "[", 
      RowBox[{
       RowBox[{
        RowBox[{"xi", "**", "y"}], "+", 
@@ -173,7 +173,7 @@ Cell[BoxData[{
  RowBox[{
   RowBox[{"Assert", "[", 
    RowBox[{
-    RowBox[{"SSCollect", "[", 
+    RowBox[{"ACollect", "[", 
      RowBox[{
       RowBox[{"y", "+", 
        RowBox[{"y", "**", "y"}], "+", 
@@ -203,7 +203,7 @@ Cell[BoxData[{
  RowBox[{
   RowBox[{"Assert", "[", 
    RowBox[{
-    RowBox[{"SSCollect", "[", 
+    RowBox[{"ACollect", "[", 
      RowBox[{
       RowBox[{
        RowBox[{"3", "y"}], "+", 
@@ -239,7 +239,7 @@ Cell[BoxData[{
  RowBox[{
   RowBox[{"Assert", "[", 
    RowBox[{
-    RowBox[{"SSCollect", "[", 
+    RowBox[{"ACollect", "[", 
      RowBox[{
       RowBox[{
        RowBox[{"3", "y"}], "+", 
@@ -276,7 +276,7 @@ Cell[BoxData[{
  RowBox[{
   RowBox[{"Assert", "[", 
    RowBox[{
-    RowBox[{"SSCollect", "[", 
+    RowBox[{"ACollect", "[", 
      RowBox[{
       RowBox[{"x", "**", "z", "**", 
        RowBox[{"(", 
@@ -298,7 +298,7 @@ Cell[BoxData[{
  RowBox[{
   RowBox[{"Assert", "[", 
    RowBox[{
-    RowBox[{"SSCollect", "[", 
+    RowBox[{"ACollect", "[", 
      RowBox[{
       RowBox[{"u", "**", "t", "**", "v", "**", "w"}], ",", 
       RowBox[{"{", 
@@ -310,7 +310,7 @@ Cell[BoxData[{
  RowBox[{
   RowBox[{"Assert", "[", 
    RowBox[{
-    RowBox[{"SSMonomialRules", "[", 
+    RowBox[{"AMonomialRules", "[", 
      RowBox[{
       RowBox[{
        SuperscriptBox["x", "2"], "+", 
@@ -340,7 +340,7 @@ Cell[BoxData[{
  RowBox[{
   RowBox[{"Assert", "[", 
    RowBox[{
-    RowBox[{"SSMonomialRules", "[", 
+    RowBox[{"AMonomialRules", "[", 
      RowBox[{
       RowBox[{"u", "**", "t", "**", "v", "**", "w"}], ",", 
       RowBox[{"{", 
@@ -357,12 +357,12 @@ Cell[BoxData[{
  RowBox[{
   RowBox[{"Assert", "[", 
    RowBox[{
-    RowBox[{"SSValidate", "[", 
+    RowBox[{"AValidate", "[", 
      RowBox[{"x", "**", 
       RowBox[{"(", 
        RowBox[{"y", " ", "2"}], ")"}]}], "]"}], "&&", 
     RowBox[{"Not", "[", 
-     RowBox[{"SSValidate", "[", 
+     RowBox[{"AValidate", "[", 
       RowBox[{"x", " ", "y"}], "]"}], "]"}]}], "]"}], ";"}]}], "Input",
  CellChangeTimes->CompressedData["
 1:eJxTTMoPSmViYGCQBmIQ/ciq92Fz0mvHgnrRZyB6cq2eXSuQ7vHRdQHRM6+a
@@ -378,15 +378,15 @@ gum6lZqs3CmvHTcw7gLTk9bXzXetfu3IeWg6mAYAbyLWdg==
 Cell[BoxData[{
  RowBox[{
   RowBox[{
-   RowBox[{"SSClass", "[", "x", "]"}], "=", "\"\<scalar\>\""}], 
+   RowBox[{"AClass", "[", "x", "]"}], "=", "\"\<scalar\>\""}], 
   ";"}], "\[IndentingNewLine]", 
  RowBox[{
   RowBox[{
-   RowBox[{"SSClass", "[", "y", "]"}], "=", "\"\<scalar\>\""}], 
+   RowBox[{"AClass", "[", "y", "]"}], "=", "\"\<scalar\>\""}], 
   ";"}], "\[IndentingNewLine]", 
  RowBox[{
   RowBox[{
-   RowBox[{"SSClass", "[", "z", "]"}], "=", "\"\<scalar\>\""}], 
+   RowBox[{"AClass", "[", "z", "]"}], "=", "\"\<scalar\>\""}], 
   ";"}]}], "Input",
  CellChangeTimes->{3.676264013201416*^9}],
 
@@ -394,7 +394,7 @@ Cell[BoxData[{
  RowBox[{
   RowBox[{"Assert", "[", 
    RowBox[{
-    RowBox[{"SSExpand", "[", 
+    RowBox[{"AExpand", "[", 
      RowBox[{"x", "**", 
       RowBox[{"(", 
        RowBox[{"y", " ", "z"}], ")"}]}], "]"}], "===", 
@@ -403,7 +403,7 @@ Cell[BoxData[{
  RowBox[{
   RowBox[{"Assert", "[", 
    RowBox[{
-    RowBox[{"SSExpand", "[", 
+    RowBox[{"AExpand", "[", 
      RowBox[{
       RowBox[{"PartialD", "[", "x", "]"}], "**", "x"}], "]"}], "===", 
     RowBox[{"1", "+", 
@@ -413,7 +413,7 @@ Cell[BoxData[{
  RowBox[{
   RowBox[{"Assert", "[", 
    RowBox[{
-    RowBox[{"SSExpand", "[", 
+    RowBox[{"AExpand", "[", 
      RowBox[{
       RowBox[{
        RowBox[{"PartialD", "[", "z", "]"}], "**", 
@@ -432,7 +432,7 @@ Cell[BoxData[{
  RowBox[{
   RowBox[{"Assert", "[", 
    RowBox[{
-    RowBox[{"SSExpand", "[", 
+    RowBox[{"AExpand", "[", 
      RowBox[{"y", " ", 
       RowBox[{
        RowBox[{"PartialD", "[", "x", "]"}], "**", 
@@ -447,7 +447,7 @@ Cell[BoxData[{
  RowBox[{
   RowBox[{"Assert", "[", 
    RowBox[{
-    RowBox[{"SSExpand", "[", 
+    RowBox[{"AExpand", "[", 
      RowBox[{
       RowBox[{"PartialD", "[", "z", "]"}], "**", 
       RowBox[{"PartialD", "[", "x", "]"}], "**", "y", "**", "x"}], "]"}], "===", 
@@ -465,14 +465,14 @@ Cell[BoxData[{
  RowBox[{
   RowBox[{"Assert", "[", 
    RowBox[{
-    RowBox[{"SSExpand", "[", 
+    RowBox[{"AExpand", "[", 
      RowBox[{"y", "**", "y", "**", 
       RowBox[{"y", "^", "4"}]}], "]"}], "===", 
     RowBox[{"y", "^", "6"}]}], "]"}], ";"}], "\[IndentingNewLine]", 
  RowBox[{
   RowBox[{"Assert", "[", 
    RowBox[{
-    RowBox[{"SSCollect", "[", 
+    RowBox[{"ACollect", "[", 
      RowBox[{
       RowBox[{"y", "+", 
        RowBox[{"y", "**", "y"}], "+", 
@@ -502,7 +502,7 @@ Cell[BoxData[{
  RowBox[{
   RowBox[{"Assert", "[", 
    RowBox[{
-    RowBox[{"SSCollect", "[", 
+    RowBox[{"ACollect", "[", 
      RowBox[{
       RowBox[{
        RowBox[{"3", "y"}], "+", 
@@ -535,7 +535,7 @@ Cell[BoxData[{
  RowBox[{
   RowBox[{"Assert", "[", 
    RowBox[{
-    RowBox[{"SSCollect", "[", 
+    RowBox[{"ACollect", "[", 
      RowBox[{
       RowBox[{
        RowBox[{"3", "y"}], "+", 
@@ -571,7 +571,7 @@ Cell[BoxData[{
  RowBox[{
   RowBox[{"Assert", "[", 
    RowBox[{
-    RowBox[{"SSCollect", "[", 
+    RowBox[{"ACollect", "[", 
      RowBox[{
       RowBox[{"x", "**", "z", "**", 
        RowBox[{"(", 
@@ -590,7 +590,7 @@ Cell[BoxData[{
       RowBox[{"h", "[", "y", "]"}]}]}]}], "]"}], ";"}], "\[IndentingNewLine]", 
  RowBox[{
   RowBox[{"Assert", "[", 
-   RowBox[{"SSValidate", "[", 
+   RowBox[{"AValidate", "[", 
     RowBox[{"x", " ", "y"}], "]"}], "]"}], ";"}]}], "Input",
  CellChangeTimes->{{3.675653418190032*^9, 3.6756534189849873`*^9}, {
   3.6756941849048758`*^9, 3.675694204722677*^9}, {3.6756953767905693`*^9, 
@@ -653,21 +653,21 @@ Cell[BoxData[{
      RowBox[{"2", "!"}]}]}], "*)"}]}], "\[IndentingNewLine]", 
  RowBox[{
   RowBox[{
-   RowBox[{"SSClass", "[", 
+   RowBox[{"AClass", "[", 
     RowBox[{"Ket", "[", "_", "]"}], "]"}], "=", "\"\<ket\>\""}], 
   ";"}], "\[IndentingNewLine]", 
  RowBox[{
   RowBox[{
-   RowBox[{"SSClass", "[", 
+   RowBox[{"AClass", "[", 
     RowBox[{"L", "[", "_", "]"}], "]"}], "=", "\"\<virasoro\>\""}], 
   ";"}], "\[IndentingNewLine]", 
  RowBox[{
   RowBox[{
-   RowBox[{"SSClass", "[", 
+   RowBox[{"AClass", "[", 
     RowBox[{"Bra", "[", "_", "]"}], "]"}], "=", "\"\<bra\>\""}], 
   ";"}], "\[IndentingNewLine]", 
  RowBox[{
-  RowBox[{"SSDeclareCommutator", "[", "\[IndentingNewLine]", 
+  RowBox[{"ADeclareCommutator", "[", "\[IndentingNewLine]", 
    RowBox[{
     RowBox[{"{", 
      RowBox[{
@@ -690,7 +690,7 @@ Cell[BoxData[{
         RowBox[{"L", ",", "\"\<c\>\""}], "]"}], "/", "12"}]}]}]}], "]"}], 
   ";"}], "\[IndentingNewLine]", 
  RowBox[{
-  RowBox[{"SSDeclareProduct", "[", "\[IndentingNewLine]", 
+  RowBox[{"ADeclareProduct", "[", "\[IndentingNewLine]", 
    RowBox[{
     RowBox[{
      RowBox[{
@@ -740,15 +740,15 @@ Cell[BoxData[{
   ";"}], "\[IndentingNewLine]", 
  RowBox[{
   RowBox[{
-   RowBox[{"SSClass", "[", "c", "]"}], "=", "\"\<scalar\>\""}], 
+   RowBox[{"AClass", "[", "c", "]"}], "=", "\"\<scalar\>\""}], 
   ";"}], "\[IndentingNewLine]", 
  RowBox[{
   RowBox[{
-   RowBox[{"SSClass", "[", "h", "]"}], "=", "\"\<scalar\>\""}], 
+   RowBox[{"AClass", "[", "h", "]"}], "=", "\"\<scalar\>\""}], 
   ";"}], "\[IndentingNewLine]", 
  RowBox[{
   RowBox[{
-   RowBox[{"SSClass", "[", "b", "]"}], "=", "\"\<scalar\>\""}], 
+   RowBox[{"AClass", "[", "b", "]"}], "=", "\"\<scalar\>\""}], 
   ";"}]}], "Input",
  CellChangeTimes->{{3.673399866192055*^9, 3.673399867049141*^9}, {
    3.6734001129227257`*^9, 3.673400141253558*^9}, {3.673400182417674*^9, 
@@ -775,7 +775,7 @@ Cell[BoxData[{
      RowBox[{"n", "\[GreaterEqual]", "0"}]}], "]"}], ":=", 
    RowBox[{
     RowBox[{"KacMatrix", "[", "n", "]"}], "=", "\[IndentingNewLine]", 
-    RowBox[{"SSExpand", "[", 
+    RowBox[{"AExpand", "[", 
      RowBox[{"Outer", "[", 
       RowBox[{
        RowBox[{
@@ -973,7 +973,7 @@ Cell[BoxData[
 
 Cell[BoxData[
  RowBox[{"{", 
-  RowBox[{"91.616`", ",", "Null"}], "}"}]], "Output",
+  RowBox[{"58.472`", ",", "Null"}], "}"}]], "Output",
  CellChangeTimes->{3.675697981459157*^9, 3.675698730900001*^9, 
   3.676122799253393*^9, 3.676142212304062*^9, 3.676142825234483*^9, 
   3.67614838889922*^9, 3.676148948235697*^9, 3.676202045767432*^9, 
@@ -982,7 +982,7 @@ Cell[BoxData[
   3.676322629881085*^9, 3.67632312518557*^9, 3.676323522370998*^9, 
   3.676324886189651*^9, 3.6763273375586*^9, 3.6763278999730167`*^9, 
   3.676331071167246*^9, 3.676331658790738*^9, 3.6763321659475393`*^9, 
-  3.6763322619397993`*^9, 3.688508820007848*^9}]
+  3.6763322619397993`*^9, 3.688508820007848*^9, 3.707336488018919*^9}]
 }, Open  ]],
 
 Cell[BoxData[
@@ -1080,7 +1080,7 @@ Cell[BoxData[{
        RowBox[{"b", "^", "2"}]}]}]}], "}"}], ",", "\[IndentingNewLine]", 
    RowBox[{
     RowBox[{"km3", "=", 
-     RowBox[{"SSExpand", "[", 
+     RowBox[{"AExpand", "[", 
       RowBox[{"Outer", "[", 
        RowBox[{
         RowBox[{
@@ -1165,7 +1165,8 @@ Cell[BoxData[
    3.676227071981882*^9, 3.676321810546796*^9, 3.6763226305575123`*^9, 
    3.676323125756783*^9, 3.676323523021132*^9, 3.67632488671546*^9, 
    3.6763273380776443`*^9, 3.6763279004817257`*^9, 3.676331071829492*^9, 
-   3.676331659378986*^9, 3.6763322624211617`*^9, 3.6885088205768833`*^9}]
+   3.676331659378986*^9, 3.6763322624211617`*^9, 3.6885088205768833`*^9, 
+   3.707336489045361*^9}]
 }, Open  ]],
 
 Cell[BoxData[{
@@ -1216,7 +1217,7 @@ Cell[BoxData[{
                RowBox[{
                 RowBox[{"Lookup", "[", 
                  RowBox[{
-                  RowBox[{"SSMonomialRules", "[", 
+                  RowBox[{"AMonomialRules", "[", 
                    RowBox[{
                     RowBox[{
                     RowBox[{"L", "[", "i", "]"}], "**", "v"}], ",", 
@@ -1245,7 +1246,7 @@ Cell[BoxData[{
               RowBox[{"Table", "[", 
                RowBox[{
                 RowBox[{
-                 RowBox[{"SSExpand", "[", 
+                 RowBox[{"AExpand", "[", 
                   RowBox[{
                    RowBox[{
                     RowBox[{"L", "[", "i", "]"}], "**", "nv"}], "/.", 
@@ -1254,7 +1255,7 @@ Cell[BoxData[{
                  RowBox[{"i", ",", "2"}], "}"}]}], "]"}]}], "]"}], ";", 
             "\[IndentingNewLine]", 
             RowBox[{
-             RowBox[{"SSCollect", "[", 
+             RowBox[{"ACollect", "[", 
               RowBox[{"nv", ",", 
                RowBox[{"{", 
                 RowBox[{"_", ",", "_L", ",", "_Ket"}], "}"}]}], "]"}], "/.", 
@@ -1661,10 +1662,10 @@ Cell[BoxData[{
    RowBox[{
     RowBox[{"(", 
      RowBox[{
-      RowBox[{"SSClass", "[", "#", "]"}], "=", "\"\<grassmann\>\""}], ")"}], 
+      RowBox[{"AClass", "[", "#", "]"}], "=", "\"\<grassmann\>\""}], ")"}], 
     "&"}], "/@", "thetas"}], ";"}], "\[IndentingNewLine]", 
  RowBox[{
-  RowBox[{"SSDeclareCommutator", "[", "\[IndentingNewLine]", 
+  RowBox[{"ADeclareCommutator", "[", "\[IndentingNewLine]", 
    RowBox[{
     RowBox[{
      RowBox[{"{", 
@@ -1672,69 +1673,68 @@ Cell[BoxData[{
        RowBox[{
         RowBox[{"_", "?", 
          RowBox[{"(", 
-          RowBox[{"SSOfClassQ", "[", "\"\<grassmann\>\"", "]"}], ")"}]}], "|", 
+          RowBox[{"AOfClassQ", "[", "\"\<grassmann\>\"", "]"}], ")"}]}], "|", 
+        
         RowBox[{"PartialD", "[", 
          RowBox[{"th_", "?", 
           RowBox[{"(", 
-           RowBox[{"SSOfClassQ", "[", "\"\<grassmann\>\"", "]"}], ")"}]}], 
+           RowBox[{"AOfClassQ", "[", "\"\<grassmann\>\"", "]"}], ")"}]}], 
          "]"}]}], ",", "\[IndentingNewLine]", 
        RowBox[{"_", "?", 
         RowBox[{"(", 
-         RowBox[{"SSOfClassQ", "[", "\"\<scalar\>\"", "]"}], ")"}]}]}], "}"}],
-      "\[RuleDelayed]", "0"}], ",", "\[IndentingNewLine]", 
+         RowBox[{"AOfClassQ", "[", "\"\<scalar\>\"", "]"}], ")"}]}]}], "}"}], 
+     "\[RuleDelayed]", "0"}], ",", "\[IndentingNewLine]", 
     RowBox[{
      RowBox[{"{", 
       RowBox[{
        RowBox[{"PartialD", "[", 
         RowBox[{"_", "?", 
          RowBox[{"(", 
-          RowBox[{"SSOfClassQ", "[", "\"\<grassmann\>\"", "]"}], ")"}]}], 
+          RowBox[{"AOfClassQ", "[", "\"\<grassmann\>\"", "]"}], ")"}]}], 
         "]"}], ",", 
        RowBox[{"PartialD", "[", 
         RowBox[{"_", "?", 
          RowBox[{"(", 
-          RowBox[{"SSOfClassQ", "[", "\"\<scalar\>\"", "]"}], ")"}]}], 
-        "]"}]}], "}"}], "\[RuleDelayed]", "0"}], ",", "\[IndentingNewLine]", 
+          RowBox[{"AOfClassQ", "[", "\"\<scalar\>\"", "]"}], ")"}]}], "]"}]}],
+       "}"}], "\[RuleDelayed]", "0"}], ",", "\[IndentingNewLine]", 
     RowBox[{
      RowBox[{"{", 
       RowBox[{
        RowBox[{"PartialD", "[", 
         RowBox[{"a_", "?", 
          RowBox[{"(", 
-          RowBox[{"SSOfClassQ", "[", "\"\<scalar\>\"", "]"}], ")"}]}], "]"}], 
+          RowBox[{"AOfClassQ", "[", "\"\<scalar\>\"", "]"}], ")"}]}], "]"}], 
        ",", 
        RowBox[{"b_", "?", 
         RowBox[{"(", 
-         RowBox[{"SSOfClassQ", "[", "\"\<grassmann\>\"", "]"}], ")"}]}]}], 
+         RowBox[{"AOfClassQ", "[", "\"\<grassmann\>\"", "]"}], ")"}]}]}], 
       "}"}], "\[RuleDelayed]", 
      RowBox[{"D", "[", 
       RowBox[{"b", ",", "a"}], "]"}]}]}], "\[IndentingNewLine]", "]"}], 
   ";"}], "\[IndentingNewLine]", 
  RowBox[{
-  RowBox[{"SSDeclareAnticommutator", "[", "\[IndentingNewLine]", 
+  RowBox[{"ADeclareAnticommutator", "[", "\[IndentingNewLine]", 
    RowBox[{
     RowBox[{
      RowBox[{"{", 
       RowBox[{
        RowBox[{"_", "?", 
         RowBox[{"(", 
-         RowBox[{"SSOfClassQ", "[", "\"\<grassmann\>\"", "]"}], ")"}]}], ",", 
-       
+         RowBox[{"AOfClassQ", "[", "\"\<grassmann\>\"", "]"}], ")"}]}], ",", 
        RowBox[{"_", "?", 
         RowBox[{"(", 
-         RowBox[{"SSOfClassQ", "[", "\"\<grassmann\>\"", "]"}], ")"}]}]}], 
+         RowBox[{"AOfClassQ", "[", "\"\<grassmann\>\"", "]"}], ")"}]}]}], 
       "}"}], "\[RuleDelayed]", "0"}], ",", "\[IndentingNewLine]", 
     RowBox[{
      RowBox[{"{", 
       RowBox[{
        RowBox[{"a_", "?", 
         RowBox[{"(", 
-         RowBox[{"SSOfClassQ", "[", "\"\<grassmann\>\"", "]"}], ")"}]}], ",", 
-       
+         RowBox[{"AOfClassQ", "[", "\"\<grassmann\>\"", "]"}], ")"}]}], ",", 
        RowBox[{"PartialD", "[", 
         RowBox[{"b_", "?", 
          RowBox[{"(", 
-          RowBox[{"SSOfClassQ", "[", "\"\<grassmann\>\"", "]"}], ")"}]}], 
+          RowBox[{"AOfClassQ", "[", "\"\<grassmann\>\"", "]"}], ")"}]}], 
         "]"}]}], "}"}], "\[RuleDelayed]", 
      RowBox[{"If", "[", 
       RowBox[{
@@ -1746,12 +1746,12 @@ Cell[BoxData[{
        RowBox[{"PartialD", "[", 
         RowBox[{"_", "?", 
          RowBox[{"(", 
-          RowBox[{"SSOfClassQ", "[", "\"\<grassmann\>\"", "]"}], ")"}]}], 
+          RowBox[{"AOfClassQ", "[", "\"\<grassmann\>\"", "]"}], ")"}]}], 
         "]"}], ",", 
        RowBox[{"PartialD", "[", 
         RowBox[{"_", "?", 
          RowBox[{"(", 
-          RowBox[{"SSOfClassQ", "[", "\"\<grassmann\>\"", "]"}], ")"}]}], 
+          RowBox[{"AOfClassQ", "[", "\"\<grassmann\>\"", "]"}], ")"}]}], 
         "]"}]}], "}"}], "\[RuleDelayed]", "0"}]}], "]"}], ";"}]}], "Input",
  CellChangeTimes->{{3.67614323170483*^9, 3.6761432324248533`*^9}, {
    3.676143265128911*^9, 3.676143416061623*^9}, {3.6761434706441717`*^9, 
@@ -1772,7 +1772,7 @@ Cell[BoxData[{
  RowBox[{
   RowBox[{"Assert", "[", 
    RowBox[{
-    RowBox[{"SSExpand", "[", 
+    RowBox[{"AExpand", "[", 
      RowBox[{
       RowBox[{"PartialD", "[", 
        SuperscriptBox["\[Theta]", "-"], "]"}], "**", 
@@ -1786,7 +1786,7 @@ Cell[BoxData[{
  RowBox[{
   RowBox[{"Assert", "[", 
    RowBox[{
-    RowBox[{"SSExpand", "[", 
+    RowBox[{"AExpand", "[", 
      RowBox[{
       RowBox[{
        SuperscriptBox["\[Theta]", "-"], "**", 
@@ -1798,7 +1798,7 @@ Cell[BoxData[{
  RowBox[{
   RowBox[{"Assert", "[", 
    RowBox[{
-    RowBox[{"SSExpand", "[", 
+    RowBox[{"AExpand", "[", 
      RowBox[{
       RowBox[{"(", 
        RowBox[{"z", " ", 
@@ -1900,7 +1900,7 @@ Cell[BoxData[{
           RowBox[{"(", "\[IndentingNewLine]", 
            RowBox[{
             RowBox[{
-             RowBox[{"SSClass", "[", "#1", "]"}], "=", 
+             RowBox[{"AClass", "[", "#1", "]"}], "=", 
              RowBox[{"If", "[", 
               RowBox[{
                RowBox[{"OddQ", "[", 
@@ -2055,14 +2055,14 @@ Cell[BoxData[
   3.676323850282385*^9, 3.676324889740364*^9, 3.676326628210704*^9, 
   3.676326910565845*^9, 3.676327374572514*^9, 3.67632790346733*^9, 
   3.676331076322668*^9, 3.676331661832806*^9, 3.676332265234954*^9, 
-  3.6885088244771976`*^9}]
+  3.6885088244771976`*^9, 3.7073364951578827`*^9}]
 }, Open  ]],
 
 Cell[BoxData[
  RowBox[{
   RowBox[{"Assert", "[", 
    RowBox[{
-    RowBox[{"SSMonomialRules", "[", 
+    RowBox[{"AMonomialRules", "[", 
      RowBox[{
       RowBox[{"Superfield", "[", "a", "]"}], ",", 
       RowBox[{"Alternatives", "@@", "thetas"}]}], "]"}], "===", 
@@ -2176,7 +2176,7 @@ Cell[CellGroupData[{
 
 Cell[BoxData[
  RowBox[{
-  RowBox[{"Superfield", "[", "a", "]"}], "//", "SSExpand"}]], "Input",
+  RowBox[{"Superfield", "[", "a", "]"}], "//", "AExpand"}]], "Input",
  CellChangeTimes->{{3.6761490524046593`*^9, 3.676149052899404*^9}, {
   3.676205317682876*^9, 3.676205320490679*^9}}],
 
@@ -2286,14 +2286,15 @@ Cell[BoxData[
    3.676322168945758*^9, 3.676322633438346*^9, 3.676323853049741*^9, 
    3.676324889830537*^9, 3.676326630350709*^9, 3.67632691396955*^9, 
    3.6763273768809137`*^9, 3.6763279035700893`*^9, 3.676331076418912*^9, 
-   3.676331661935445*^9, 3.676332265311863*^9, 3.688508824589451*^9}]
+   3.676331661935445*^9, 3.676332265311863*^9, 3.688508824589451*^9, 
+   3.707336495549108*^9}]
 }, Open  ]],
 
 Cell[BoxData[
  RowBox[{
   RowBox[{"Assert", "[", 
    RowBox[{
-    RowBox[{"SSMonomialRules", "[", 
+    RowBox[{"AMonomialRules", "[", 
      RowBox[{
       SuperscriptBox[
        RowBox[{"Superfield", "[", "a", "]"}], "2"], ",", 
@@ -2530,17 +2531,17 @@ Cell[CellGroupData[{
 Cell[BoxData[
  RowBox[{"Timing", "[", 
   RowBox[{"Assert", "[", 
-   RowBox[{"SSExpand", "[", 
+   RowBox[{"AExpand", "[", 
     RowBox[{
      RowBox[{
-      RowBox[{"SSExpand", "[", 
+      RowBox[{"AExpand", "[", 
        RowBox[{
         RowBox[{"Superfield", "[", "a", "]"}], "**", 
         RowBox[{"Superfield", "[", "b", "]"}]}], "]"}], "**", 
       RowBox[{"Superfield", "[", "c", "]"}]}], "==", 
      RowBox[{
       RowBox[{"Superfield", "[", "a", "]"}], "**", 
-      RowBox[{"SSExpand", "[", 
+      RowBox[{"AExpand", "[", 
        RowBox[{
         RowBox[{"Superfield", "[", "b", "]"}], "**", 
         RowBox[{"Superfield", "[", "c", "]"}]}], "]"}]}]}], "]"}], "]"}], 
@@ -2551,7 +2552,7 @@ Cell[BoxData[
 
 Cell[BoxData[
  RowBox[{"{", 
-  RowBox[{"23.02`", ",", "Null"}], "}"}]], "Output",
+  RowBox[{"14.456`", ",", "Null"}], "}"}]], "Output",
  CellChangeTimes->{3.676149168458845*^9, 3.6762032450732603`*^9, 
   3.676205336435082*^9, 3.676205631824218*^9, 3.676205664007101*^9, 
   3.6762057030742188`*^9, 3.676206798840517*^9, 3.6762072548125772`*^9, 
@@ -2560,7 +2561,8 @@ Cell[BoxData[
   3.676222016452642*^9, 3.676227103436245*^9, 3.6763239626570997`*^9, 
   3.676324908225698*^9, 3.676326650799485*^9, 3.676326947779677*^9, 
   3.6763273970912123`*^9, 3.676327921198082*^9, 3.67633109812788*^9, 
-  3.676331679985547*^9, 3.6763322836497183`*^9, 3.688508849198909*^9}]
+  3.676331679985547*^9, 3.6763322836497183`*^9, 3.688508849198909*^9, 
+  3.707336511072001*^9}]
 }, Open  ]],
 
 Cell[CellGroupData[{
@@ -2580,7 +2582,7 @@ Cell[BoxData[
       RowBox[{
        SuperscriptBox["\[Theta]", "+"], "**", 
        SubscriptBox["\[ScriptD]", "+"]}]}], "\[Equal]", "1"}], "//", 
-    "SSExpand"}], "]"}], ";"}]], "Input",
+    "AExpand"}], "]"}], ";"}]], "Input",
  CellChangeTimes->{{3.676206801610711*^9, 3.676206815132371*^9}, {
    3.6762069554867477`*^9, 3.6762070391373158`*^9}, 3.6762071058233747`*^9, {
    3.676207234620266*^9, 3.676207236450653*^9}, {3.676207268065823*^9, 
@@ -2589,9 +2591,9 @@ Cell[BoxData[
 Cell[BoxData[{
  RowBox[{
   RowBox[{
-   RowBox[{"SSClass", "[", "z", "]"}], "=", 
+   RowBox[{"AClass", "[", "z", "]"}], "=", 
    RowBox[{
-    RowBox[{"SSClass", "[", "zbar", "]"}], "=", "\"\<scalar\>\""}]}], 
+    RowBox[{"AClass", "[", "zbar", "]"}], "=", "\"\<scalar\>\""}]}], 
   ";"}], "\[IndentingNewLine]", 
  RowBox[{
   RowBox[{
@@ -2692,7 +2694,7 @@ Cell[BoxData[
      RowBox[{
       RowBox[{
        RowBox[{
-        RowBox[{"SSExpand", "[", 
+        RowBox[{"AExpand", "[", 
          RowBox[{
           RowBox[{
            RowBox[{"#1", "**", "#2"}], "+", 
@@ -2784,13 +2786,13 @@ Cell["From (2.1) of Closset-Cremonesi:", "Text",
 Cell[BoxData[
  RowBox[{
   RowBox[{
-   RowBox[{"SSClass", "[", 
+   RowBox[{"AClass", "[", 
     RowBox[{
      RowBox[{
       RowBox[{
        RowBox[{"Derivative", "[", "___", "]"}], "[", "a_", "]"}], "[", "b___",
        "]"}], "[", "c_", "]"}], "]"}], "=", 
-   RowBox[{"SSClass", "[", 
+   RowBox[{"AClass", "[", 
     RowBox[{
      RowBox[{"a", "[", "b", "]"}], "[", "c", "]"}], "]"}]}], ";"}]], "Input",
  CellChangeTimes->{{3.676325351164091*^9, 3.676325458911405*^9}, {
@@ -2811,7 +2813,7 @@ Cell[BoxData[{
        RowBox[{"Superfield", "[", 
         RowBox[{"Rz", "[", 
          RowBox[{"z", ",", "zbar"}], "]"}], "]"}]}], "]"}]}], "//", 
-    "SSExpand"}]}], ";"}], "\[IndentingNewLine]", 
+    "AExpand"}]}], ";"}], "\[IndentingNewLine]", 
  RowBox[{
   RowBox[{
    SubscriptBox["\[Chi]", "+"], "=", 
@@ -2825,7 +2827,7 @@ Cell[BoxData[{
        RowBox[{"Superfield", "[", 
         RowBox[{"Rzbar", "[", 
          RowBox[{"z", ",", "zbar"}], "]"}], "]"}]}], "]"}]}], "//", 
-    "SSExpand"}]}], ";"}], "\[IndentingNewLine]", 
+    "AExpand"}]}], ";"}], "\[IndentingNewLine]", 
  RowBox[{
   RowBox[{
    SubscriptBox[
@@ -2839,7 +2841,7 @@ Cell[BoxData[{
        RowBox[{"Superfield", "[", 
         RowBox[{"Rz", "[", 
          RowBox[{"z", ",", "zbar"}], "]"}], "]"}]}], "]"}]}], "//", 
-    "SSExpand"}]}], ";"}], "\[IndentingNewLine]", 
+    "AExpand"}]}], ";"}], "\[IndentingNewLine]", 
  RowBox[{
   RowBox[{
    SubscriptBox[
@@ -2853,7 +2855,7 @@ Cell[BoxData[{
        RowBox[{"Superfield", "[", 
         RowBox[{"Rzbar", "[", 
          RowBox[{"z", ",", "zbar"}], "]"}], "]"}]}], "]"}]}], "//", 
-    "SSExpand"}]}], ";"}]}], "Input",
+    "AExpand"}]}], ";"}]}], "Input",
  CellChangeTimes->{{3.6763260217161083`*^9, 3.676326029647415*^9}}],
 
 Cell[BoxData[
@@ -2866,7 +2868,7 @@ Cell[BoxData[
       RowBox[{
        RowBox[{"D", "[", 
         RowBox[{
-         RowBox[{"SSExpand", "[", 
+         RowBox[{"AExpand", "[", 
           RowBox[{
            RowBox[{"Superfield", "[", 
             RowBox[{"Rz", "[", 
@@ -2886,7 +2888,7 @@ Cell[BoxData[
           RowBox[{
            RowBox[{"Rz", "[", 
             RowBox[{"z", ",", "zbar"}], "]"}], ",", "zbar"}], "]"}], 
-         "]"}]}]}], ")"}]}]}], "//", "SSExpand"}], "]"}]], "Input",
+         "]"}]}]}], ")"}]}]}], "//", "AExpand"}], "]"}]], "Input",
  CellChangeTimes->{{3.676327396258749*^9, 3.676327398224625*^9}, {
   3.67632745137574*^9, 3.6763274771719427`*^9}, {3.676327601275177*^9, 
   3.676327632526491*^9}, {3.676331011713011*^9, 3.676331014566474*^9}}],
@@ -2899,7 +2901,7 @@ Cell[BoxData[
    RowBox[{
     RowBox[{"#", "\[Equal]", "0"}], "&"}], "/@", 
    RowBox[{"Values", "[", 
-    RowBox[{"SSMonomialRules", "[", 
+    RowBox[{"AMonomialRules", "[", 
      RowBox[{
       RowBox[{"Anticommutator", "[", 
        RowBox[{
@@ -3085,7 +3087,7 @@ Cell[BoxData[
    3.67632526787792*^9, {3.676327662309032*^9, 3.6763276823972483`*^9}, 
    3.676327714738442*^9, 3.676327924235344*^9, 3.676331103088917*^9, 
    3.676331345175075*^9, 3.676331682994231*^9, 3.6763322872499*^9, 
-   3.6885088529967012`*^9}]
+   3.6885088529967012`*^9, 3.707336514706422*^9}]
 }, Open  ]],
 
 Cell[CellGroupData[{
@@ -3239,7 +3241,7 @@ Cell[BoxData[
    "0"}]}]], "Output",
  CellChangeTimes->{3.6763277185331783`*^9, 3.676327924316806*^9, 
   3.6763311031923933`*^9, 3.6763313462627583`*^9, 3.676331683062962*^9, 
-  3.6763322872815533`*^9, 3.688508853056711*^9}]
+  3.6763322872815533`*^9, 3.688508853056711*^9, 3.707336514928808*^9}]
 }, Open  ]],
 
 Cell["[...] To be continued [...]", "Text",
@@ -3259,9 +3261,9 @@ Cell[TextData[Cell[BoxData[
 Cell[BoxData[{
  RowBox[{
   RowBox[{
-   RowBox[{"SSClass", "[", "q", "]"}], "=", "\"\<scalar\>\""}], ";"}], "\n", 
+   RowBox[{"AClass", "[", "q", "]"}], "=", "\"\<scalar\>\""}], ";"}], "\n", 
  RowBox[{
-  RowBox[{"SSDeclareCommutator", "[", 
+  RowBox[{"ADeclareCommutator", "[", 
    RowBox[{
     RowBox[{"{", 
      RowBox[{"e", ",", "f"}], "}"}], "\[RuleDelayed]", 
@@ -3275,7 +3277,7 @@ Cell[BoxData[{
        RowBox[{"q", "^", 
         RowBox[{"-", "1"}]}]}], ")"}]}]}], "]"}], ";"}], "\n", 
  RowBox[{
-  RowBox[{"SSDeclareProduct", "[", "\[IndentingNewLine]", 
+  RowBox[{"ADeclareProduct", "[", "\[IndentingNewLine]", 
    RowBox[{
     RowBox[{
      RowBox[{"k", "**", "e"}], "\[RuleDelayed]", 
@@ -3343,7 +3345,7 @@ Cell[BoxData[{
  RowBox[{
   RowBox[{"Assert", "[", 
    RowBox[{
-    RowBox[{"SSExpand", "[", 
+    RowBox[{"AExpand", "[", 
      RowBox[{
       RowBox[{
        RowBox[{
@@ -3360,7 +3362,7 @@ Cell[BoxData[{
  RowBox[{
   RowBox[{"Assert", "[", 
    RowBox[{
-    RowBox[{"SSExpand", "[", 
+    RowBox[{"AExpand", "[", 
      RowBox[{
       RowBox[{
        RowBox[{
@@ -3377,7 +3379,7 @@ Cell[BoxData[{
  RowBox[{
   RowBox[{"Assert", "[", 
    RowBox[{
-    RowBox[{"SSExpand", "[", 
+    RowBox[{"AExpand", "[", 
      RowBox[{
       RowBox[{
        RowBox[{
