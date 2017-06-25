@@ -54,22 +54,22 @@ AExpand::usage=Usage@"\
 $AExpand[expr, options]$ or equivalently $AExpand[options][expr]$ \
 distributes non-commutative products and applies commutation rules and product \
 rules (see $ADeclareAnticommutator$, $ADeclareCommutator$, $ADeclareProduct$) in \
-an effort to order factors according to the preferred order (see $AOrder$).
-
+an effort to order factors according to the preferred order (see $AOrder$). \
+\
 The product is assumed to be associative: when evaluating $a**b**c$ there is no \
 guarantee on whether a rule for $a**b$ or for $b**c$ will apply first. \
-
+\
 The function $Expand$ is applied where relevant.  Just like $Expand$, $AExpand$ \
 threads over lists, equations, inequalities and logic functions.
 
-$Distribute->patt$ prevents $AExpand$ from distributing terms free of $patt$: if \
+$AExpand[\[Ellipsis], Distribute->patt]$ prevents $AExpand$ from distributing terms free of $patt$: if \
 $a$ and $b$ match $patt$ and $x$ and $y$ do not then $(x+y+a+b^2)**(x+y+b)$ becomes \
 $(x+y)^2+(x+y)**b+a**(x+y)+a**b+b^2**(x+y)+b^3$.
 
-$Only->patt$ prevents $AExpand$ from applying commutation and product rules for \
+$AExpand[\[Ellipsis], Only->patt]$ prevents $AExpand$ from applying commutation and product rules for \
 factors free of $patt$.  A useful pattern is $_?(AOfClassQ[class])$.
 
-$Order->{x,y...}$ causes $AExpand$ to use as the preferred order the order \
+$AExpand[\[Ellipsis], Order->{x,y,\[Ellipsis]}]$ causes $AExpand$ to use as the preferred order the order \
 where variables matching $x$ are placed to the left of those matching $y$, \
 and so on, ending with variables that match none of the patterns.  Variables \
 matching the same pattern are ordered according to the default order $AOrder$. \
@@ -77,15 +77,15 @@ The pattern $_$ is treated specially: it only matches if no other pattern \
 matches (using $_$ twice is an error).  If a variable matches several \
 patterns there is no guarantee on which one matches.
 
-$Expand->patt$ causes $AExpand$ to apply $Expand[#,patt]&$ instead of \
-$Expand$.  To disable $Expand$ completely use the pattern $Except[_]$.";
+$AExpand[\[Ellipsis], Expand->patt]$ causes $AExpand$ to apply $Expand[#,patt]&$ instead of \
+$Expand$ to subexpressions.  To disable $Expand$ completely use the pattern $Except[_]$.";
 
 ACollect::usage=Usage@"\
 $ACollect[expr, x]$ expands $expr$ using $AExpand$ then collects together \
 terms with the same power of (any variable matching) $x$.  The $x$ are factored \
 towards the left of the expression.
 
-$ACollect[expr, {x1, x2..., _..., y2, y1}]$ expands $expr$ using $AExpand$, \
+$ACollect[expr, {x1, x2, \[Ellipsis], _, \[Ellipsis], y2, y1}]$ expands $expr$ using $AExpand$, \
 then collects terms according to the powers of (variables matching) $x1$, and \
 in each coefficient collects terms according to the powers of $x2$, and so \
 on until reaching the general pattern $_$ in the pattern list.  Then powers \
@@ -94,7 +94,7 @@ and so on.
 
 $ACollect[expr, vars, h]$ applies $h$ to each coefficient.
 
-$Distribute->patt$ and $Only->patt$ are passed to $AExpand$ as options.  Just \
+$ACollect[\[Ellipsis], Distribute->patt]$ and $Only->patt$ are passed to $AExpand$ as options.  Just \
 like $AExpand$, $ACollect$ threads over lists, equations, inequalities and \
 logic functions.";
 
@@ -104,19 +104,18 @@ power of (any variable matching) $x$ to the left of the expression.  The \
 result is given as an association whose keys are products of variables $x$ \
 and whose values are the corresponding coefficients.
 
-$AMonomialRules[expr, {x1, x2..., _..., y2, y1}]$ gives nested associations \
+$AMonomialRules[expr, {x1, x2, \[Ellipsis], _, \[Ellipsis], y2, y1}]$ gives nested associations \
 whose keys are products of variables matching $x1$, then $x2$ and so on, \
 then $y1$, $y2$, and so on.  The syntax is the same as $ACollect$.
 
 $AMonomialRules[expr, vars, h]$ applies $h$ to each coefficient.
 
-$Distribute->patt$ and $Only->patt$ are passed to $AExpand$ as options.  \
+$AMonomialRules[\[Ellipsis], Distribute->patt, Only->patt]$ are passed to $AExpand$ as options.  \
 $AMonomialRules$ threads over lists in $expr$.";
 
 AValidate::usage=Usage@"\
 $AValidate[expr]$ checks that usual (commutative) multiplication is only used \
-in $expr$ with factors that commute.  If yes, it yields True, otherwise False. \
-Other validation steps might be added in the future.";
+in $expr$ with factors that commute.";
 
 AClass::usage=Usage@"\
 $AClass[var]$ gives the class of $var$.  The class of a variable affects the \
@@ -125,15 +124,14 @@ functions, namely $AClass[patt_]:=c$ declares that variables matching the patter
 $patt$ have class $c$.  This declaration also adds $c$ (if it is new) to the list of \
 classes, whose order defines the default ordering of classes.
 
-The class \"number\" is predefined and it includes $NumericQ$ quantities. \
+$AClass[var]$:=\"number\" is predefined for numeric quantities. \
 A non-commutative product with a variable of this class is automatically \
 converted to a commutative product.
 
-The class \"scalar\" is predefined for variables that commute with all others \
-except those of class \"differential\" (see below).  Declaring that $x$ is a \
-scalar is done with $AClass[x]:=\"scalar\"$.
+$AClass[var]$:=\"scalar\" is predefined for variables that commute with all others \
+except those of class \"differential\".
 
-The class \"differential\" is predefined for differential operators.  It \
+$AClass[var]$:=\"differential\" is predefined for differential operators.  It \
 includes $PartialD[x]$ (see $PartialD$).";
 
 AOfClassQ::usage=Usage@"\
@@ -147,7 +145,7 @@ non-commutative products, to determine whether applicable commutation rules \
 should be used.  It is $1$ if $x**y$ is preferred, $-1$ if $y**x$ is, and $0$ if $x===y$. \
 It is important that $AOrder[x, y] == -AOrder[y, x]$.
 
-The default order relies on comparing the variables' classes $AClass[x]$ and \
+$AOrder[x, y]$ by default compares the variables' classes $AClass[x]$ and \
 $AClass[y]$ using $AClassOrder$.  If this gives $0$ (for instance if $x$ and $y$ have \
 the same class) then $x$ and $y$ are compared using $AOrderWithinClass$, typically \
 the standard $Order$.";
@@ -159,7 +157,7 @@ $-1$ if they should be ordered after, and $0$ if the order is indifferent.  In t
 last case (including the case $c===d$), $AOrderWithinClass$ is used to determine \
 the order.  It is important that $AClassOrder[d, c] == -AClassOrder[c, d]$.
 
-By default, $AClassOrder$ is the order in which classes are declared using \
+$AClassOrder[c, d]$ by default is the order in which classes are declared using \
 $AClass[patt]:=c$, except for the class \"differential\" which is placed to the \
 very right.";
 
@@ -168,39 +166,41 @@ $AOrderWithinClass[x, y, classx, classy]$ is used to determine the preferred \
 order $AOrder[x, y]$ of $x$ and $y$ when comparing their classes is not enough \
 (when $AClassOrder$ gives $0$).  By default this is the standard $Order[x, y]$.
 
-The classes of $x$ and $y$ are included here among the arguments so that one can \
+$AOrderWithinClass[x, y, classx, classy]$ includes the classes of $x$ and $y$ among its arguments so that one can \
 more easily defined a custom order for variables of a specific class.  It is \
 important that $AOrderWithinClass[y, x, classy, classx] == \
 -AOrderWithinClass[x, y, classx, classy]$.";
 
 ADeclareProduct::usage=Usage@"\
-$ADeclareProduct[x**y :> rhs...]$ declares one or more rules for the \
+$ADeclareProduct[x**y :> rhs, \[Ellipsis]]$ declares one or more rules for the \
 product of two variables (or patterns), namely it declares $x**y$ equal to $rhs$. \
 A condition can be included in the $rhs$: $ADeclareProduct[x**y:>expr/;cond]$. \
 By default, this rule is only used by $AExpand$ if $x$ and $y$ are not in the \
 preferred order.
 
-$Apply->True$ causes the rules being declared to be applied even if $x**y$ is \
+$ADeclareProduct[\[Ellipsis], Apply->True]$ causes the rules being declared to be applied even if $x**y$ is \
 already in the preferred order (including the case where they coincide). \
 This may lead to infinite recursion if the right-hand side involves $y**x$.";
 
 ADeclareCommutator::usage=Usage@"\
-$ADeclareCommutator[{x,y} :> rhs...]$ declares one or more rules for the \
+$ADeclareCommutator[{x,y} :> rhs, \[Ellipsis]]$ declares one or more rules for the \
 commutator of two variables (or patterns), namely it declares $x**y$ equal to \
 $y**x+rhs$ (and conversely $y**x$ equal to $x**y-rhs$).  This rule is used by \
 $AExpand$ to bring products in the preferred order.";
 
 ADeclareAnticommutator::usage=Usage@"\
-$ADeclareAnticommutator[{x,y} :> rhs...]$ declares one or more rules for \
+$ADeclareAnticommutator[{x,y} :> rhs, \[Ellipsis]]$ declares one or more rules for \
 the anticommutator of two variables (or patterns), namely it declares $x**y$ \
 equal to $-y**x+rhs$ (and conversely $y**x$ equal to $-x**y+rhs$).  It also takes \
-care of the case where $x$ and $y$ are equal: $x**x$ is declared to be $rhs/2$.  This \
+care of the case where $x$ and $y$ are equal: $x**x$ is declared to be $rhs$/2.  This \
 rule is used by $AExpand$ to bring products in the preferred order.";
 
 PartialD::usage=Usage@"\
-$PartialD[x_]$ represents the partial derivative operator with respect to the \
+$PartialD[x]$ represents the partial derivative operator with respect to the \
 (scalar) variable $x$.  In products, it can be commuted through any \
 expression using $PartialD[x]**y - y**PartialD[x] == D[y, x]$.";
+
+$AMaxPower::usage="Maximum power that is expanded to a noncommutative product (currently not implemented)";
 
 $AMaxPower=100;
 
