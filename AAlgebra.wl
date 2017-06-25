@@ -42,9 +42,13 @@ HoldPattern[Usage[str_]]:=
 StringReplace[str,"$"~~Shortest[a___]~~"$":>
   With[{expr=MakeExpression[a,StandardForm]/.HoldComplete->HoldForm},
        If[Head[expr]===ErrorBox,a,
-          "\*"<>ToString[ToBoxes[
-            expr/.x_Symbol:>With[{y=If[LowerCaseQ[ToString[x]],Style[x,"TI"],x]},y/;True],
-            StandardForm],InputForm]]]];
+          "\!\(\*"<>
+          ToString[ToBoxes[
+            expr/.x_Symbol/;LowerCaseQ[ToString[x]]:>Style[x,"TI"],
+            StandardForm]/.
+            (StripOnInput->False):>Sequence[]//.
+            TagBox[x_,HoldForm]:>x,
+           InputForm]<>"\)"]]];
 
 AExpand::usage=Usage@"\
 $AExpand[expr, options]$ or equivalently $AExpand[options][expr]$ \
