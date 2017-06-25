@@ -683,6 +683,13 @@ AClass::unknown="The class `1` was not declared.";
 AExpand::badopt="Option `1` for AExpand is invalid."; 
 AOfClassQ::pattx="AOfClassQ used as \"?AOfClassQ[...]\" instead of \"?(AOfClassQ[...])\".";
 
+(HoldPattern[#[___]]:=RuleCondition[Message[#::usage];Fail])&/@{
+  ACollect,
+  AMonomialRules,
+  ADeclareProduct,
+  ADeclareCommutator,
+  ADeclareAnticommutator};
+
 Protect@@allfunctions;
 Protect[NonCommutativeMultiply];
 Unprotect[AClass];
